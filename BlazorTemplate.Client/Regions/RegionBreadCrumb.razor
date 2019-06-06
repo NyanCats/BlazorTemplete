@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNetCore.Blazor.Services
+
+@inject IUriHelper UriHelper
+
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb">
+    @foreach (var item in Locations)
+    {
+        var active = (Locations.Last() == item);
+        <li class="breadcrumb-item @(active ? "text-info" : "")">@item</li>
+    }
+
+        <!-- Breadcrumb Menu-->
+        <li class="breadcrumb-menu d-md-down-none">
+            <div class="btn-group" role="group" aria-label="Button group">
+                <a class="btn" href="#">
+                    <i class="icon-speech"></i>
+                </a>
+                <a class="btn" href="./">
+                    <i class="icon-graph"></i>  Dashboard
+                </a>
+                <a class="btn" href="#">
+                    <i class="icon-settings"></i>  Settings
+                </a>
+            </div>
+        </li>
+    </ol>
+</nav>
+@functions
+{
+    [Parameter]
+    private string Url { get; set; }
+    [Parameter]
+    private string Icon { get; set; }
+    [Parameter]
+    private string Text { get; set; }
+
+    List<string> Locations = new List<string>();
+
+    protected override void OnInit()
+    {
+        UriHelper.OnLocationChanged += OnLocationChanges;
+        OnLocationChanges(null, UriHelper.GetAbsoluteUri());
+    }
+
+    private void OnLocationChanges(object sender, string location)
+    {
+        Locations.Clear();
+        Locations.Add("Home");
+        foreach(var item in new Uri(location).AbsolutePath.Split('/'))
+        {
+            if (string.IsNullOrWhiteSpace(item)) { continue; }
+            Locations.Add(item);
+        }
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        UriHelper.OnLocationChanged -= OnLocationChanges;
+    }
+}

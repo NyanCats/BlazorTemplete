@@ -1,0 +1,58 @@
+﻿@inject HttpClient Http
+@inject IUriHelper UriHelper
+@inject SessionService SessionService
+@inject AccountService AccountService
+
+@if (IsLogin)
+{
+    <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <button class="nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <img class="img-avatar" src="./img/avatar_sample.png">
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+                <div class="dropdown-header">
+                    <h5>@UserName</h5>
+                </div>
+
+                <a class="dropdown-item" onclick=@LogoutAccount>
+                    <i class="icon-logout"></i> ログアウト
+                </a>
+
+            </div>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item px-3">
+            <a class="nav-link" href="./login">ログイン</a>
+        </li>
+    </ul>
+}
+
+
+@functions
+{
+    bool IsLogin { get; set; } = false;
+    string UserName { get; set; } = "";
+
+    async Task LogoutAccount()
+    {
+        await SessionService.Logout(Http);
+        await AccountService.GetUserInfomation(Http);
+    }
+
+    protected override void OnInit()
+    {
+        AccountService.UserInfomationChanged += OnUserInfomationChanged;
+    }
+
+    protected void OnUserInfomationChanged(object sender, UserInfomationEventArgs e)
+    {
+        IsLogin = e.IsValid;
+        UserName = e.UserName;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+
+@inject HttpClient Http
+@inject SessionService SessionService
+@inject AccountService AccountService
+
+<RegionHeader />
+
+<div class="app-body">
+
+    <RegionSideBar />
+
+    <main class="main">
+        <RegionBreadCrumb />
+        <div class="container-fluid">
+            <div class="animated fadeIn">
+                @Body
+            </div>
+        </div>
+    </main>
+    <!-- <RegionAsideMenu /> -->
+</div>
+
+<RegionFooter />
+
+@functions
+{
+    protected override async Task OnInitAsync()
+    {
+        var result = await SessionService.ValidateCookie(Http);
+
+        if (result)
+        {
+            await AccountService.GetUserInfomation(Http);
+        }
+
+        StateHasChanged();
+    }
+}
