@@ -13,7 +13,7 @@
 #*.cs     diff=csharp
 
 *.cs linguist-language=C#
-BlazorTemplete/BlazorTemplate.Client/wwwroot/* linguist-vendored
+BlazorTemplate.Client/wwwroot/* linguist-vendored
 
 
 ###############################################################################
