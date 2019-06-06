@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorTemplate.Client\BlazorTemplate.Client.csproj" />
-    <ProjectReference Include="..\BlazorTemplate.Shared\BlazorTemplate.Commons.csproj" />
+    <ProjectReference Include="..\BlazorTemplate.Shared\BlazorTemplate.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

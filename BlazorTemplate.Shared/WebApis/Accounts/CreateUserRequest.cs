@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace BlazorTemplate.Commons.WebApis.Accounts
+namespace BlazorTemplate.Shared.WebApis.Accounts
 {
     
     public class CreateUserRequest

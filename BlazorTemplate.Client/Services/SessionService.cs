@@ -1,12 +1,14 @@
-﻿using BlazorTemplate.Commons.WebApis.Sessions;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+
+using BlazorTemplate.Shared.WebApis.Sessions;
 
 namespace BlazorTemplate.Client.Services
 {

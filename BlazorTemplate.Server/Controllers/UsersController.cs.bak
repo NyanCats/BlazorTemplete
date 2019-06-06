@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlazorTemplate.Commons.Entities.Commands;
+using BlazorTemplate.Shared.Entities.Commands;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
 using Microsoft.AspNetCore.Authentication;

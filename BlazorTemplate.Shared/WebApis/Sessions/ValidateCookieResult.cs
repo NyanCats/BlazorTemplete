@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorTemplate.Commons.WebApis.Sessions
+namespace BlazorTemplate.Shared.WebApis.Sessions
 {
     public class ValidateCookieResult
     {

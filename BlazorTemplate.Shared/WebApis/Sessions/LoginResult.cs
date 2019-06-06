@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BlazorTemplate.Commons.WebApis.Sessions
+namespace BlazorTemplate.Shared.WebApis.Sessions
 {
     public class LoginResult
     {

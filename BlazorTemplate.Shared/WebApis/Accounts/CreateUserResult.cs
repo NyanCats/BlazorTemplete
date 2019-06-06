@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorTemplate.Commons.WebApis.Accounts
+namespace BlazorTemplate.Shared.WebApis.Accounts
 {
     public class CreateUserResult
     {

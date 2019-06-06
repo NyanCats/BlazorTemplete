@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTemplate.Server", "Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTemplate.Client", "BlazorTemplate.Client\BlazorTemplate.Client.csproj", "{20976D2A-96A3-4689-BD73-659C69474EDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTemplate.Commons", "BlazorTemplate.Shared\BlazorTemplate.Commons.csproj", "{8C5311C0-7361-488A-BA94-2A60C962751B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTemplate.Shared", "BlazorTemplate.Shared\BlazorTemplate.Shared.csproj", "{8C5311C0-7361-488A-BA94-2A60C962751B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47159CA9-81CC-43E9-96C0-5D79D4819ABA}"
 	ProjectSection(SolutionItems) = preProject

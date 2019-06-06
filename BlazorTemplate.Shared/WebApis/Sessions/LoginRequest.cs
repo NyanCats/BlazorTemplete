@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace BlazorTemplate.Commons.WebApis.Sessions
+namespace BlazorTemplate.Shared.WebApis.Sessions
 {
     public class LoginRequest
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BlazorTemplate.Commons.WebApis.Accounts
+namespace BlazorTemplate.Shared.WebApis.Accounts
 {
     public class UserInfomationResult
     {

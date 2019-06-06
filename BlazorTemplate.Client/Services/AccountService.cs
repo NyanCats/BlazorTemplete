@@ -1,9 +1,11 @@
-﻿using Microsoft.JSInterop;
-using System.Threading.Tasks;
+﻿using System;
 using System.Net.Http;
-using System;
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Components;
-using BlazorTemplate.Commons.WebApis.Accounts;
+using Microsoft.JSInterop;
+
+using BlazorTemplate.Shared.WebApis.Accounts;
 
 namespace BlazorTemplate.Client.Services
 {
