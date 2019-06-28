@@ -15,8 +15,7 @@
             <h3>ログイン</h3>
         </div>
         <div class="card-body">
-            <form onsubmit="@LoginAccount" method="post">
-
+            <EditForm Model="LoginRequest" OnValidSubmit="@LoginAccount">
                 <div class="form-group">
                     <label for="username">ユーザー名</label>
                     <div class="input-group">
@@ -25,7 +24,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <input id="username" class="form-control" type="text" placeholder="UserName" bind="@UserName" />
+                        <InputText id="username" class="form-control" bind-value="@LoginRequest.UserName" />
                     </div>
                 </div>
 
@@ -37,7 +36,7 @@
                                 <i class="icon-key"></i>
                             </span>
                         </div>
-                        <input id="password" class="form-control" type="text" placeholder="Password" bind="@Password" />
+                        <InputText id="password" class="form-control" bind-value="@LoginRequest.Password" />
                     </div>
                 </div>
 
@@ -46,34 +45,25 @@
                         <button class="btn btn-primary px-4" type="submit">ログインする</button>
                     </div>
                 </div>
-            </form>
-            @foreach (var error in Errors)
-            {
-                <span class="alert alert-danger small" role="alert" style="padding: .25rem .25rem;">@error</span>
-            }
+
+                <DataAnnotationsValidator />
+                <label class="text-danger small">
+                    <ValidationSummary />
+                </label>
+            </EditForm>
+
         </div>
     </div>
 </div>
 
 @functions
 {
-    string UserName { get; set; }
-    string Password { get; set; }
-
-    List<string> Errors { get; set; } = new List<string>();
+    LoginRequest LoginRequest{ get; set; } = new LoginRequest();
+    LoginResult LoginResult{ get; set; } = new LoginResult();
 
     async Task LoginAccount()
     {
-        Errors.Clear();
-
-        LoginResult result = await SessionService.Login(Http, new LoginRequest() { UserName = UserName, Password = Password });
-
-        if (result == null) { return; }
-        if (0 < result.Errors.Count)
-        {
-            Errors.AddRange(result.Errors);
-            return;
-        }
+        LoginResult = await SessionService.Login(Http, LoginRequest);
 
         await AccountService.GetUserInfomation(Http);
 
@@ -81,5 +71,4 @@
 
         StateHasChanged();
     }
-
 }

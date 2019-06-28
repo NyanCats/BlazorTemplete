@@ -8,10 +8,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
     {
         public string UserName { get; set; }
 
-        public UserInfomationResult()
-        {
-
-        }
+        public UserInfomationResult() { }
 
         public UserInfomationResult(string userName)
         {

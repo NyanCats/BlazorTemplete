@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+
+using BlazorTemplate.Server.Services;
+using BlazorTemplate.Server.SharedServices;
+using BlazorTemplate.Shared.WebApis.Accounts;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
-using System.Threading.Tasks;
-using BlazorTemplate.Shared.WebApis.Accounts;
-using BlazorTemplate.Server.Services;
-using BlazorTemplate.Server.SharedServices;
 
 namespace BlazorTemplate.Server.Controllers
 {
@@ -34,22 +33,14 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromBody]CreateUserRequest request) 
         {
-            // Cookie認証によるセッションチェック
+            // ログイン済みか
             var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
-            if(loginResult) return Ok(new CreateUserResult(null, new List<string>() { "ログイン中は登録できません。" }));
+            if(loginResult) return BadRequest();
 
             // モデルの検証
-            if (!ModelState.IsValid)
-            {
-                // 仕様に合わせたエラーメッセージの作成
-                List<string> errors = new List<string>();
-                foreach(var values in ModelState.Values)
-                {
-                    errors.AddRange(values.Errors.Select( e => e.ErrorMessage));
-                }
-                return Ok(new CreateUserResult(null, errors));
-            }
+            if (!ModelState.IsValid) return BadRequest();
 
+            /*
             // リモートIPの取得
             var userIp = HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -69,14 +60,15 @@ namespace BlazorTemplate.Server.Controllers
                                                     $"[{SpamBlockService.GetBlockCount(userIp)}/{SpamBlockService.AllowableCount}]" })
                 );
             }
+            */
 
             (IdentityResult result, string password) = await AccountService.Create(request.UserName);
 
-            if (!result.Succeeded) return BadRequest(new CreateUserResult(null, result.Errors.Select(s => s.Description).ToList()));
+            if (!result.Succeeded) return BadRequest();
 
-            SpamBlockService.AddOrUpdate(userIp);
+            //SpamBlockService.AddOrUpdate(userIp);
 
-            return Ok( new CreateUserResult(password, null) );
+            return Ok( new CreateUserResult(password) );
         }
 
         [HttpGet]
@@ -90,6 +82,7 @@ namespace BlazorTemplate.Server.Controllers
             return Ok(new UserInfomationResult(user.Name));
         }
 
+        // TODO
         [HttpPut]
         [Authorize]
         //[ValidateAntiForgeryToken]
@@ -98,6 +91,7 @@ namespace BlazorTemplate.Server.Controllers
             throw new NotImplementedException();
         }
 
+        // TODO
         [HttpDelete]
         [Authorize]
         //[ValidateAntiForgeryToken]

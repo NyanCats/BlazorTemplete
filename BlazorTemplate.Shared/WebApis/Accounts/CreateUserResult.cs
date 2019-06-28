@@ -6,17 +6,12 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
     public class CreateUserResult
     {
         public string Password { get; set; }
-        public List<string> Errors { get; set; }
 
-        public CreateUserResult()
-        {
-            Errors = new List<string>();
-        }
+        public CreateUserResult(){ }
 
-        public CreateUserResult(string password, List<string> errors = null)
+        public CreateUserResult(string password)
         {
             Password = password;
-            Errors = errors;
         }
     }
 }

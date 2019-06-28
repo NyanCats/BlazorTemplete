@@ -20,7 +20,7 @@
             <h3>新規登録</h3>
         </div>
         <div class="card-body">
-            <form onsubmit="@RegisterAccount" method="post">
+            <EditForm Model="@CreateUserRequest" OnValidSubmit="@RegisterAccount">
                 <p class="text-muted small">サービスを利用するには、ユーザー名と利用規約への同意が必要です。メールアドレスは必要ありません。</p>
                 <div class="form-group">
                     <label for="username">ユーザー名</label>
@@ -34,7 +34,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <input id="username" class="form-control" type="text" placeholder="UserName" bind="@UserName" />
+                        <InputText id="username" class="form-control" bind-value="@CreateUserRequest.UserName" />
                     </div>
                     <label class="text-muted small">
                         4文字以上16文字以下の半角英数字及びアンダースコア (_)
@@ -56,7 +56,7 @@
                             </p>
                             <div class="container" style="float:left;height:26px;padding-left: 0px;width: 40px;">
                                 <label class="switch switch-label switch-success">
-                                    <input class="switch-input" type="checkbox" bind="@Agreed" />
+                                    <InputCheckbox class="switch-input" bind-value="@CreateUserRequest.Agreed" />
                                     <span class="switch-slider" data-checked="✓" data-unchecked="✕"></span>
                                 </label>
                             </div>
@@ -66,24 +66,18 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <div class="text-center">
                         <button class="btn btn-primary px-4" type="submit">登録する</button>
                     </div>
                 </div>
-            </form>
 
-            <form onsubmit="@LogoutAccount" method="post">
-                <div class="form-group">
-                    <div class="text-center">
-                        <button class="btn btn-primary px-4" type="submit">ログアウトする</button>
-                    </div>
-                </div>
-            </form>
-            @foreach (var error in Errors)
-            {
-                <span class="alert alert-danger small" role="alert" style="padding: .25rem .25rem;">@error</span>
-            }
+                <DataAnnotationsValidator />
+                <label class="text-danger small">
+                    <ValidationSummary />
+                </label>
+            </EditForm>
         </div>
     </div>
 </div>
@@ -93,9 +87,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">登録が完了しました。</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -106,7 +97,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <input class="form-control" id="#copyTarget_UserName" type="text" value="@UserName" readonly="" />
+                        <input class="form-control" id="#copyTarget_UserName" type="text" value="@CreateUserRequest.UserName" readonly="" />
 
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" onclick="@Click_CopyUserName">
@@ -123,7 +114,7 @@
                                 <i class="icon-key"></i>
                             </span>
                         </div>
-                        <input class="form-control" id="#copyTarget_Password" type="text" value="@Password" readonly="">
+                        <input class="form-control" id="#copyTarget_Password" type="text" value="@CreateUserResult.Password" readonly="">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" onclick="@Click_CopyPassword">
                                 <i class="icon-note"></i>
@@ -142,45 +133,23 @@
 
 @functions
 {
-    bool Agreed { get; set; } = false;
-    string UserName { get; set; } = "";
-    string Password { get; set; } = "";
-    List<string> Errors { get; set; } = new List<string>();
+    CreateUserRequest CreateUserRequest { get; set; } = new CreateUserRequest();
+    CreateUserResult CreateUserResult{ get; set; } = new CreateUserResult();
 
     async Task RegisterAccount()
     {
-        Errors.Clear();
-
-        var result = await AccountService.Create(Http, new CreateUserRequest { Agreed = Agreed, UserName = UserName });
-
-        if (result.Errors != null && 0 < result.Errors.Count)
+        try
         {
-            Errors.AddRange(result.Errors);
-            return;
+            CreateUserResult = await AccountService.Create(Http, CreateUserRequest);
+
+            await JSRuntime.InvokeAsync<bool>("showRegisterModal");
+
+            StateHasChanged();
         }
-        if (string.IsNullOrEmpty(result.Password)) { return; }
-
-        Password = result.Password;
-
-        StateHasChanged();
-
-        await JSRuntime.InvokeAsync<bool>("showRegisterModal");
-        //await AccountService.Login(Http, new LoginCommand() { UserName = UserName, Password = Password });
-        //await AccountService.UserInfomation(Http);
-
-        StateHasChanged();
-    }
-
-    async Task LogoutAccount()
-    {
-        Errors.Clear();
-
-        await SessionService.Logout(Http);
-        await AccountService.GetUserInfomation(Http);
-
-        UriHelper.NavigateTo("/");
-
-        StateHasChanged();
+        catch(Exception e)
+        {
+            UriHelper.NavigateTo("/");
+        }
     }
 
     protected override async Task OnAfterRenderAsync()
@@ -190,13 +159,14 @@
 
     protected void Click_RegisterModalOk()
     {
-        UriHelper.NavigateTo("/login");
+    UriHelper.NavigateTo("/login");
     }
 
     void Click_CopyUserName()
     {
         JSRuntime.InvokeAsync<bool>("copyToClipBoard", "#copyTarget_UserName");
     }
+
     void Click_CopyPassword()
     {
         JSRuntime.InvokeAsync<bool>("copyToClipBoard", "#copyTarget_Password");

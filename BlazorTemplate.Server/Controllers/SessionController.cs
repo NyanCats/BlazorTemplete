@@ -1,15 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BlazorTemplate.Shared.WebApis.Sessions;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorTemplate.Server.Controllers
 {
@@ -33,31 +29,16 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody]LoginRequest request)
         {
-            // Cookie認証によるセッションチェック
-            var cookieLoginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
-            if (cookieLoginResult) return Ok(new LoginResult(new List<string>() { "既にログインしています。" }));
+            // ログイン済みか
+            var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
+            if (loginResult) return BadRequest();
 
             // モデルの検証
-            if (!ModelState.IsValid)
-            {
-                // 仕様に合わせたエラーメッセージの作成
-                List<string> errors = new List<string>();
-                foreach (var values in ModelState.Values)
-                {
-                    errors.AddRange(values.Errors.Select(e => e.ErrorMessage));
-                }
-                return Ok(new LoginResult(errors));
-            }
+            if (!ModelState.IsValid) return BadRequest();
 
             var result = await AccountService.Login(request.UserName, request.Password);
 
-            if (!result.Succeeded)
-            {
-                if (result.IsLockedOut) return Ok(new LoginResult(new List<string>() { "ロックアウトされています。" }));
-                if (result.IsNotAllowed) return Ok(new LoginResult(new List<string>() { "ログインは許可されていません。" }));
-
-                return Ok(new LoginResult(new List<string>() { "ログインに失敗しました。" }));
-            }
+            if (!result.Succeeded) return BadRequest();
 
             return Ok(new LoginResult(null));
         }
@@ -68,7 +49,7 @@ namespace BlazorTemplate.Server.Controllers
         public async Task<IActionResult> Logout()
         {
             var result = await HttpContext.AuthenticateAsync();
-            if (!result.Succeeded) return NoContent();
+            if (!result.Succeeded) return Ok();
 
             await AccountService.Logout();
             return Ok();
