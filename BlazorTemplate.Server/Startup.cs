@@ -106,9 +106,7 @@ namespace BlazorTemplate.Server
             /*
             Services.AddAntiforgery(options =>
             {
-                //options.FormFieldName = "AntiforgeryField";
                 options.HeaderName = "X-CSRF-TOKEN";
-                //options.SuppressXFrameOptionsHeader = false;
             });
             */
 
@@ -287,10 +285,10 @@ namespace BlazorTemplate.Server
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Cookies["CSRF-TOKEN"] == null)
+            if (context.Request.Cookies["X-CSRF-TOKEN"] == null)
             {
                 var token = _antiforgery.GetAndStoreTokens(context);
-                context.Response.Cookies.Append("CSRF-TOKEN", token.RequestToken, new CookieOptions { HttpOnly = false });
+                context.Response.Cookies.Append("X-CSRF-TOKEN", token.RequestToken, new CookieOptions { HttpOnly = false });
             }
             await _next(context);
         }
