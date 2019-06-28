@@ -40,17 +40,14 @@ namespace BlazorTemplate.Server.Controllers
 
             if (!result.Succeeded) return BadRequest();
 
-            return Ok(new LoginResult(null));
+            return Ok(new LoginResult());
         }
 
         [HttpDelete]
-        [AllowAnonymous]
+        [Authorize]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            var result = await HttpContext.AuthenticateAsync();
-            if (!result.Succeeded) return Ok();
-
             await AccountService.Logout();
             return Ok();
         }

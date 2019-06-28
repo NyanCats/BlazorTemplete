@@ -26,49 +26,13 @@ namespace BlazorTemplate.Server.Controllers
             AccountService = accountService;
             SpamBlockService = spamBlockSharedService;
         }
-        /*
-        [HttpPost]
-        [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create() 
-        {
-
-        }
-        */
-
-        [HttpGet]
-        [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Get()
-        {
-            return NotFound();
-        }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Read(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            throw new NotImplementedException();
+            return NotFound();
         }
-
-        /*
-        [HttpPut]
-        [Authorize]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update()
-        {
-
-        }
-        */
-        /*
-        [HttpDelete]
-        [Authorize]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete()
-        {
-
-        }
-        */
     }
 }

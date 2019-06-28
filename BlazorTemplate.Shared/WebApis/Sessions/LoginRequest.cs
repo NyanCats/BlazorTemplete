@@ -17,7 +17,7 @@ namespace BlazorTemplate.Shared.WebApis.Sessions
         public string UserName { get; set; } = null;
 
         /// <summary>
-        /// LoginCommandのプロパティNameに使用できない文字が含まれていないかを検証します。
+        /// LoginRequestのプロパティUserNameに使用できない文字が含まれていないかを検証します。
         /// </summary>
         public static ValidationResult Validate_Name001(string value, ValidationContext context)
         {

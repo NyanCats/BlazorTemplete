@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    
     public class CreateUserRequest
     {
         [Display(Name = "同意")]
@@ -30,7 +29,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
         public string UserName { get; set; } = null;
 
         /// <summary>
-        /// RegisterCommandのプロパティNameに使用できない文字が含まれていないかを検証します。
+        /// CreateUserRequestのプロパティUserNameに使用できない文字が含まれていないかを検証します。
         /// </summary>
         public static ValidationResult Validate_Name001(string value, ValidationContext context)
         {
