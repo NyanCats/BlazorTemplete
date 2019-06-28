@@ -1,4 +1,5 @@
 ﻿using BlazorTemplate.Server.Entities.Identities;
+using BlazorTemplate.Server.Properties;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Concurrent;
@@ -12,8 +13,8 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
     public class TestApplicationRoleStore : IRoleStore<ApplicationRole>
     {
         private static ConcurrentDictionary<string, ApplicationRole> Roles { get; } = new ConcurrentDictionary<string, ApplicationRole>();
-        private static IdentityErrorDescriber IdentityErrorDescriber { get; } = new IdentityErrorDescriber();
-
+        private static IdentityErrorDescriber IdentityErrorDescriber { get; } = new IdentityErrorDescriberJapanese();
+        
         public Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -27,7 +28,7 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
             {
                 return Task.FromResult(IdentityResult.Failed(IdentityErrorDescriber.ConcurrencyFailure()));
             }
-
+            
             return Task.FromResult(IdentityResult.Success);
         }
 
