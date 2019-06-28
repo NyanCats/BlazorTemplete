@@ -15,7 +15,7 @@ namespace BlazorTemplate.Client.Services
 
             var csrf = cookie.Split(';')
             .Select(v => v.TrimStart().Split('='))
-            .Where(s => s[0] == "CSRF-TOKEN")
+            .Where(s => s[0] == "X-CSRF-TOKEN")
             .Select(s => s[1])
             .FirstOrDefault();
 
