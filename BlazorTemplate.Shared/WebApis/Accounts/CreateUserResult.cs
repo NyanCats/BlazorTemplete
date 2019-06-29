@@ -5,7 +5,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
 {
     public class CreateUserResult
     {
-        public string Password { get; set; }
+        public string Password { get; set; } = "";
 
         public CreateUserResult(){ }
 

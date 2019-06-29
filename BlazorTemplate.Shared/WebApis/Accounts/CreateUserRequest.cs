@@ -26,7 +26,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
         [MaxLength(16)]
         [CustomValidation(typeof(CreateUserRequest), "Validate_Name001")]
         [DataType(DataType.Text)]
-        public string UserName { get; set; } = null;
+        public string UserName { get; set; } = "";
 
         /// <summary>
         /// CreateUserRequestのプロパティUserNameに使用できない文字が含まれていないかを検証します。

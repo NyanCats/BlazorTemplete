@@ -1,4 +1,5 @@
 using BlazorTemplate.Client.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ namespace BlazorTemplate.Client
         {
             services.AddSingleton<AccountService>();
             services.AddSingleton<SessionService>();
+            //services.AddAuthorizationCore();
         }
         
         public void Configure(IComponentsApplicationBuilder app)

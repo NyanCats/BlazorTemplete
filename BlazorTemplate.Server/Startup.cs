@@ -24,6 +24,9 @@ using BlazorTemplate.Server.Properties;
 using System.Net;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Localization;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace BlazorTemplate.Server
 {
@@ -39,7 +42,6 @@ namespace BlazorTemplate.Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -51,43 +53,27 @@ namespace BlazorTemplate.Server
             {
                 app.UseExceptionHandler("/Error");
                 //app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
-                //app.UseHsts();
+                app.UseHsts();
             }
 
+            //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseResponseCompression();
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
-
-            //app.UseHttpsRedirection();
-
-            /*
-            app.UseRequestLocalization
-            (
-                new RequestLocalizationOptions
-                {
-                    DefaultRequestCulture = new RequestCulture("jp-JP"),
-                    SupportedCultures = new List<CultureInfo>()
-                    {
-                        new CultureInfo("jp-JP")
-                    },
-                    SupportedUICultures = new List<CultureInfo>()
-                    {
-                        new CultureInfo("jp-JP")
-                    }
-                }
-            );
-            */
             app.UseCookiePolicy();
+            // app.UseRequestLocalization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+                //endpoints.MapBlazorHub();
+                endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
             });
-            
+
             //app.UseMiddleware<CsrfTokenCookieMiddleware>();
-            app.UseBlazor<Client.Startup>();
+            app.UseClientSideBlazorFiles<Client.Startup>();
         }
         
         public void ConfigureServices(IServiceCollection services)
@@ -142,11 +128,6 @@ namespace BlazorTemplate.Server
                     })
                     .AddCookie(options =>
                     {
-                        /*
-                        options.AccessDeniedPath = new PathString("/Account/AccessDenied");
-                        options.LoginPath = new PathString("/Account/Login");
-                        options.LogoutPath = new PathString("/Account/Logout");
-                        */
                         options.ExpireTimeSpan = TimeSpan.FromDays(30);
                     });
 
@@ -156,8 +137,8 @@ namespace BlazorTemplate.Server
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
+            //Services.AddDefaultIdentity
             Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
-
             Services.AddIdentity<ApplicationUser, ApplicationRole>()
                     .AddErrorDescriber<IdentityErrorDescriberJapanese>();
                     //.AddDefaultTokenProviders();
@@ -216,35 +197,21 @@ namespace BlazorTemplate.Server
                 */
             });
 
-            Services.AddMvc(options =>
-                    {
+            Services
+                .AddMvc(options =>
+                {
                         options.ModelMetadataDetailsProviders.Add(new ValidationMetadataProviderJapanese("BlazorTemplate.Server.Properties.ValidationResourceJapanese", typeof(ValidationResourceJapanese)));
                         //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-                    })
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-                    .AddNewtonsoftJson(options =>
-                    {
-                        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                        // options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    })
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            /*
-            services.AddDbContext<AuthenticationDbContext>(options =>
-            {
-                // Configure the context to use Microsoft SQL Server.
-                options.UseSqlServer(Configuration["ConnectionStrings:AuthenticationConnection"]);
-                options.UseOpenIddict();
-            });
-            */
+            //services.AddDbContext<AuthenticationDbContext>(options =>);
 
-            // note:
-            // Transient 	AddTransient() 	インジェクション毎にインスタンスが生成されます。
-            // Scoped 	    AddScoped() 	１リクエスト毎に１インスタンス生成されます。
-            // Singleton 	AddSingleton() 	アプリケーション内で１つのインスタンスが生成されます。
+            //Services.AddRazorPages();
+            //Services.AddServerSideBlazor();
+
             Services.AddScoped<AccountService>();
             Services.AddSingleton<SpamBlockSharedService>();
-
             Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
             Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();
         }
