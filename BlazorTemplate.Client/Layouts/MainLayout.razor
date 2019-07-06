@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Sotsera.Blazor.Toaster
+@inherits LayoutComponentBase
 
 @inject HttpClient Http
 @inject SessionService SessionService
@@ -22,9 +23,13 @@
 </div>
 
 <RegionFooter />
+<ToastContainer />
 
 @functions
 {
+    [Inject]
+    protected IToaster Toaster { get; set; }
+
     protected override async Task OnInitAsync()
     {
         var result = await SessionService.ValidateCookie(Http);
@@ -32,6 +37,7 @@
         if (result)
         {
             await AccountService.GetUserInfomation(Http);
+            Toaster.Success("自動ログインしました。");
         }
 
         StateHasChanged();

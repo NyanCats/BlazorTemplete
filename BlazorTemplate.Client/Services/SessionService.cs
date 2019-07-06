@@ -23,11 +23,13 @@ namespace BlazorTemplate.Client.Services
         public async Task<bool> Login(HttpClient http, LoginRequest request)
         {
             // await AddCsrfToken(http);
+
             try
             {
-                var result = await http.PostJsonAsync<HttpResponseMessage>("session", request);
-                return result.IsSuccessStatusCode;
-            }catch(Exception e)
+                await http.PostJsonAsync("session", request);
+                return true;
+            }
+            catch (Exception e)
             {
                 return false;
             }

@@ -3,6 +3,7 @@
 
 @using Microsoft.AspNetCore.Blazor.Services
 @using BlazorTemplate.Shared.WebApis.Sessions
+@using Sotsera.Blazor.Toaster
 
 @inject HttpClient Http
 @inject WebAssemblyUriHelper UriHelper
@@ -42,17 +43,15 @@
 
                 <div class="form-group">
                     <div class="text-center">
-                        <button class="btn btn-primary px-4" type="submit">ログインする</button>
+                        <button class="btn btn-primary px-4" type="submit" disabled="@ButtonDisabled" >ログイン</button>
                     </div>
                 </div>
 
                 <DataAnnotationsValidator />
                 <label class="text-danger small">
                     <ValidationSummary />
-                    @Message
                 </label>
             </EditForm>
-
         </div>
     </div>
 </div>
@@ -60,23 +59,42 @@
 @functions
 {
     LoginRequest LoginRequest { get; set; } = new LoginRequest();
-    string Message { get; set; } = null;
+
+    bool ButtonDisabled { get; set; } = false;
+
+    [Inject]
+    protected IToaster Toaster { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        await base.OnInitAsync();
+
+        var result = await SessionService.ValidateCookie(Http);
+
+        if (result)
+        {
+            await SessionService.Logout(Http);
+            await AccountService.GetUserInfomation(Http);
+            Toaster.Info("既にログインしていたため、ログインページではログアウトされます。");
+        }
+    }
 
     async Task LoginAccount()
     {
-        Message = null;
+        ButtonDisabled = true;
         var loginResult = await SessionService.Login(Http, LoginRequest);
 
-        if(loginResult)
+        if (loginResult)
         {
             await AccountService.GetUserInfomation(Http);
+            Toaster.Success("ログインしました。");
             UriHelper.NavigateTo("/");
         }
         else
         {
-            Message = "ログインに失敗しました。";
+            Toaster.Warning("ログインに失敗しました。");
         }
-
+        ButtonDisabled = false;
         StateHasChanged();
     }
 }

@@ -3,6 +3,8 @@
 @inject SessionService SessionService
 @inject AccountService AccountService
 
+@using Sotsera.Blazor.Toaster
+
 @if (IsLogin)
 {
     <ul class="nav navbar-nav ml-auto">
@@ -38,10 +40,14 @@ else
     bool IsLogin { get; set; } = false;
     string UserName { get; set; } = "";
 
+    [Inject]
+    protected IToaster Toaster { get; set; }
+
     async Task LogoutAccount()
     {
         await SessionService.Logout(Http);
         await AccountService.GetUserInfomation(Http);
+        Toaster.Success("ログアウトしました。");
     }
 
     protected override void OnInit()

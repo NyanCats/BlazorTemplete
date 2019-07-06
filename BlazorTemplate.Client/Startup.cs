@@ -2,6 +2,7 @@ using BlazorTemplate.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Sotsera.Blazor.Toaster.Core.Models;
 
 namespace BlazorTemplate.Client
 {
@@ -9,6 +10,12 @@ namespace BlazorTemplate.Client
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddToaster(config =>
+            {
+                config.PositionClass = Defaults.Classes.Position.BottomRight;
+                config.PreventDuplicates = true;
+                config.NewestOnTop = true;
+            });
             services.AddSingleton<AccountService>();
             services.AddSingleton<SessionService>();
             //services.AddAuthorizationCore();
