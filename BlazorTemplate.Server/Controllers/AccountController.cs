@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using BlazorTemplate.Server.Entities.Identities;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
 using BlazorTemplate.Shared.WebApis.Accounts;
@@ -21,6 +21,7 @@ namespace BlazorTemplate.Server.Controllers
     {
         private AccountService AccountService { get; set; }
         private SpamBlockSharedService SpamBlockService { get; set; }
+
 
         public AccountController(AccountService accountService, SpamBlockSharedService spamBlockSharedService)
         {
@@ -79,7 +80,7 @@ namespace BlazorTemplate.Server.Controllers
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();
 
-            return Ok(new UserInfomationResult(user.Name));
+            return Ok(new UserInfomationResult(user.UserName));
         }
 
         // TODO

@@ -15,7 +15,7 @@ namespace BlazorTemplate.Client.Services
     {
         public event UserInfomationEventHandler UserInfomationChanged;
 
-        private /*readonly*/ IJSRuntime JSRuntime { get; set; }
+        private IJSRuntime JSRuntime { get; set; }
 
         public AccountService(IJSRuntime jsRuntime)
         {

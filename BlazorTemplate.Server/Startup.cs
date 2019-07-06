@@ -1,4 +1,3 @@
-using BlazorTemplate.Server.Infrastructures.Stores;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
 using Microsoft.AspNetCore.Antiforgery;
@@ -27,6 +26,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Localization;
 using System.Collections.Generic;
 using System.Globalization;
+using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BlazorTemplate.Server
 {
@@ -63,7 +65,7 @@ namespace BlazorTemplate.Server
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCookiePolicy();
-            // app.UseRequestLocalization();
+            //app.UseRequestLocalization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -120,26 +122,44 @@ namespace BlazorTemplate.Server
                 options.Lockout.AllowedForNewUsers = true;
 
                 options.User.RequireUniqueEmail = false;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
             });
 
-            Services.AddAuthentication(options =>
-                    {
-                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    })
-                    .AddCookie(options =>
-                    {
-                        options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                    });
 
             Services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => context?.User?.Identity?.IsAuthenticated != true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    // 認証されていないユーザーがリソースにアクセスしようとしたとき
+                    options.LoginPath = $"/";
+
+                    options.LogoutPath = $"/";
+
+                    // アクセスが禁止されているリソースにアクセスしようとしたとき
+                    options.AccessDeniedPath = $"/";
+                    // クッキーの有効期限
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                });
+
             
-            //Services.AddDefaultIdentity
-            Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
+            {
+                //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
+                //options.UseInternalServiceProvider(serviceProvider);
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            
+
             Services.AddIdentity<ApplicationUser, ApplicationRole>()
+                    .AddUserManager<UserManager<ApplicationUser>>()
+                    .AddRoleManager<RoleManager<ApplicationRole>>()
+                    .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
                     .AddErrorDescriber<IdentityErrorDescriberJapanese>();
                     //.AddDefaultTokenProviders();
 
@@ -200,8 +220,8 @@ namespace BlazorTemplate.Server
             Services
                 .AddMvc(options =>
                 {
-                        options.ModelMetadataDetailsProviders.Add(new ValidationMetadataProviderJapanese("BlazorTemplate.Server.Properties.ValidationResourceJapanese", typeof(ValidationResourceJapanese)));
-                        //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                    options.ModelMetadataDetailsProviders.Add(new ValidationMetadataProviderJapanese("BlazorTemplate.Server.Properties.ValidationResourceJapanese", typeof(ValidationResourceJapanese)));
+                    //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
@@ -212,8 +232,8 @@ namespace BlazorTemplate.Server
 
             Services.AddScoped<AccountService>();
             Services.AddSingleton<SpamBlockSharedService>();
-            Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
-            Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();
+            //Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
+            //Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();
         }
 
         private void ListAllRegisteredServices(IApplicationBuilder app)

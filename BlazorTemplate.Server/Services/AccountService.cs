@@ -22,7 +22,7 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<(IdentityResult result, string password)> Create(string name)
         {
-            var user = new ApplicationUser(name);
+            var user = new ApplicationUser() { UserName = name };
 
             var password = GeneratePassword();
             var result = await UserManager.CreateAsync(user, password);

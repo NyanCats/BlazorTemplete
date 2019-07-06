@@ -1,21 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlazorTemplate.Server.Entities.Identities
 {
-    public class ApplicationRole
+    public class ApplicationRole : IdentityRole<Guid>
     {
-        public ApplicationRole(string name)
+        public ApplicationRole()
         {
-            Id = Guid.NewGuid().ToString();
-            Name = name;
-            NormalizedRoleName = Name.Normalize();
-        }
 
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string NormalizedRoleName { get; set; }
-}
+        }
+    }
 }

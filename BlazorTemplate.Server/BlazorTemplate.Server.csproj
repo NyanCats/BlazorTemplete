@@ -20,7 +20,6 @@
   
   <ItemGroup>
     <Folder Include="Infrastructures\DataBases\Migrations\" />
-    <Folder Include="Infrastructures\DataBases\Contexts\" />
   </ItemGroup>
   
   <ItemGroup>
@@ -28,6 +27,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="3.0.0-preview6.19307.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0-preview6.19307.2" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="3.0.0-preview6.19307.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0-preview6.19304.10" />
   </ItemGroup>
 
   <ItemGroup>

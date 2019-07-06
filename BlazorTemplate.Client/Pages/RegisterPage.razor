@@ -34,7 +34,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <InputText id="username" class="form-control" bind-Value="@CreateUserRequest.UserName"></InputText>
+                        <InputText id="username" class="form-control" @bind-Value="@CreateUserRequest.UserName"/>
                     </div>
                     <label class="text-muted small">
                         4文字以上16文字以下の半角英数字及びアンダースコア (_)
@@ -56,7 +56,7 @@
                             </p>
                             <div class="container" style="float:left;height:26px;padding-left: 0px;width: 40px;">
                                 <label class="switch switch-label switch-success">
-                                    <InputCheckbox class="switch-input" bind-Value="@CreateUserRequest.Agreed"></InputCheckbox>
+                                    <InputCheckbox class="switch-input" @bind-Value="@CreateUserRequest.Agreed"/>
                                     <span class="switch-slider" data-checked="✓" data-unchecked="✕"></span>
                                 </label>
                             </div>
