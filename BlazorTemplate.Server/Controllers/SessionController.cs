@@ -29,11 +29,10 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody]LoginRequest request)
         {
-            // ログイン済みか
+            // 既にログインしていた場合はBadRequest
             var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
             if (loginResult) return BadRequest();
 
-            // モデルの検証
             if (!ModelState.IsValid) return BadRequest();
 
             var result = await AccountService.Login(request.UserName, request.Password);

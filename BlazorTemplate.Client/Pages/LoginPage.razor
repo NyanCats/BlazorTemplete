@@ -27,6 +27,9 @@
                         </div>
                         <InputText id="username" class="form-control" @bind-Value="@LoginRequest.UserName" />
                     </div>
+                    <label class="text-danger small">
+                        <ValidationMessage For="@(() => LoginRequest.UserName)" />
+                    </label>
                 </div>
 
                 <div class="form-group">
@@ -39,6 +42,9 @@
                         </div>
                         <InputText id="password" class="form-control" @bind-Value="@LoginRequest.Password" />
                     </div>
+                    <label class="text-danger small">
+                        <ValidationMessage For="@(() => LoginRequest.Password)" />
+                    </label>
                 </div>
 
                 <div class="form-group">
@@ -48,9 +54,9 @@
                 </div>
 
                 <DataAnnotationsValidator />
-                <label class="text-danger small">
+                <!--<label class="text-danger small">
                     <ValidationSummary />
-                </label>
+                </label>-->
             </EditForm>
         </div>
     </div>

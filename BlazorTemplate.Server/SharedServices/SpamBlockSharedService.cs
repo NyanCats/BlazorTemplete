@@ -45,7 +45,7 @@ namespace BlazorTemplate.Server.SharedServices
 
         public void Remove(string ip)
         {
-            if (!IsRegistered(ip)) throw new Exception();
+            if (!IsRegistered(ip)) return;
             Repository.Remove(ip);
         }
     }
