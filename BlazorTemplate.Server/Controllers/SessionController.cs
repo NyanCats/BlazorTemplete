@@ -40,7 +40,7 @@ namespace BlazorTemplate.Server.Controllers
 
             if (!result.Succeeded) return BadRequest();
 
-            return Ok(new LoginResult());
+            return Ok();
         }
 
         [HttpDelete]

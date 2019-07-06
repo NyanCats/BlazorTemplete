@@ -49,6 +49,7 @@
                 <DataAnnotationsValidator />
                 <label class="text-danger small">
                     <ValidationSummary />
+                    @Message
                 </label>
             </EditForm>
 
@@ -59,15 +60,22 @@
 @functions
 {
     LoginRequest LoginRequest { get; set; } = new LoginRequest();
-    LoginResult LoginResult { get; set; } = new LoginResult();
+    string Message { get; set; } = null;
 
     async Task LoginAccount()
     {
-        LoginResult = await SessionService.Login(Http, LoginRequest);
+        Message = null;
+        var loginResult = await SessionService.Login(Http, LoginRequest);
 
-        await AccountService.GetUserInfomation(Http);
-
-        UriHelper.NavigateTo("/");
+        if(loginResult)
+        {
+            await AccountService.GetUserInfomation(Http);
+            UriHelper.NavigateTo("/");
+        }
+        else
+        {
+            Message = "ログインに失敗しました。";
+        }
 
         StateHasChanged();
     }

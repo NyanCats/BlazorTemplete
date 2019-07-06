@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 using BlazorTemplate.Shared.WebApis.Sessions;
+using System;
 
 namespace BlazorTemplate.Client.Services
 {
@@ -19,10 +20,17 @@ namespace BlazorTemplate.Client.Services
             JSRuntime = jsRuntime;
         }
 
-        public async Task<LoginResult> Login(HttpClient http, LoginRequest request)
+        public async Task<bool> Login(HttpClient http, LoginRequest request)
         {
             // await AddCsrfToken(http);
-            return await http.PostJsonAsync<LoginResult>("session", request);
+            try
+            {
+                var result = await http.PostJsonAsync<HttpResponseMessage>("session", request);
+                return result.IsSuccessStatusCode;
+            }catch(Exception e)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> Logout(HttpClient http)
