@@ -22,7 +22,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
 
         [Display(Name = "ユーザー名")]
         [Required]
-        [MinLength(4)]
+        [MinLength(4, ErrorMessage = "{0}は{1}文字以上必要です。")]
         [MaxLength(16)]
         [CustomValidation(typeof(CreateUserRequest), "Validate_Name001")]
         [DataType(DataType.Text)]
