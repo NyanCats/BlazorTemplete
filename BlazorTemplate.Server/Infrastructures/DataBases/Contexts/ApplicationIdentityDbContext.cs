@@ -1,4 +1,4 @@
-﻿using BlazorTemplate.Server.Entities.Identities;
+﻿using BlazorTemplate.Server.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;

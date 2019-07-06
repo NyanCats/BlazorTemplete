@@ -17,7 +17,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using BlazorTemplate.Server.Entities.Identities;
+using BlazorTemplate.Server.Entities;
 using BlazorTemplate.Server.Properties.SampleProject.Resources;
 using BlazorTemplate.Server.Properties;
 using System.Net;

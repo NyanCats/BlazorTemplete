@@ -63,7 +63,6 @@ namespace BlazorTemplate.Client.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 OnUserInfomationChanged(this, new UserInfomationEventArgs(false, string.Empty));
                 return null;
             }

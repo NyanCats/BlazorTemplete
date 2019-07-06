@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BlazorTemplate.Server.Entities.Identities;
+using BlazorTemplate.Server.Entities;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
 using BlazorTemplate.Shared.WebApis.Accounts;

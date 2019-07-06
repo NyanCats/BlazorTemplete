@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BlazorTemplate.Server.Entities.Identities
+namespace BlazorTemplate.Server.Entities
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
