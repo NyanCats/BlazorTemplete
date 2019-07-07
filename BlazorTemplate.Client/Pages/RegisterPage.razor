@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Blazor.Services
 @using BlazorTemplate.Shared.WebApis.Accounts
 @*using Microsoft.AspNetCore.Antiforgery.IAntiforgery*@
+@using Sotsera.Blazor.Toaster
 
 @page "/register"
 
@@ -34,7 +35,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <InputText id="username" class="form-control" @bind-Value="@CreateUserRequest.UserName"/>
+                        <InputText id="username" class="form-control" @bind-Value="@CreateUserRequest.UserName" />
                     </div>
                     <label class="text-muted small">
                         4文字以上16文字以下の半角英数字及びアンダースコア (_)
@@ -56,7 +57,7 @@
                             </p>
                             <div class="container" style="float:left;height:26px;padding-left: 0px;width: 40px;">
                                 <label class="switch switch-label switch-success">
-                                    <InputCheckbox class="switch-input" @bind-Value="@CreateUserRequest.Agreed"/>
+                                    <InputCheckbox class="switch-input" @bind-Value="@CreateUserRequest.Agreed" />
                                     <span class="switch-slider" data-checked="✓" data-unchecked="✕"></span>
                                 </label>
                             </div>
@@ -133,8 +134,14 @@
 
 @functions
 {
-    [Parameter] CreateUserRequest CreateUserRequest { get; set; } = new CreateUserRequest();
-    [Parameter] CreateUserResult CreateUserResult{ get; set; } = new CreateUserResult();
+    [Parameter]
+    CreateUserRequest CreateUserRequest { get; set; } = new CreateUserRequest();
+
+    [Parameter]
+    CreateUserResult CreateUserResult { get; set; } = new CreateUserResult();
+
+    [Inject]
+    protected IToaster Toaster { get; set; }
 
     async Task RegisterAccount()
     {
@@ -146,8 +153,9 @@
 
             StateHasChanged();
         }
-        catch(Exception e)
+        catch (Exception e)
         {
+            Toaster.Warning("新規登録に失敗しました。");
             UriHelper.NavigateTo("/");
         }
     }
@@ -159,7 +167,7 @@
 
     protected void Click_RegisterModalOk()
     {
-    UriHelper.NavigateTo("/login");
+        UriHelper.NavigateTo("/login");
     }
 
     void Click_CopyUserName()

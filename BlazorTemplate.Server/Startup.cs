@@ -157,8 +157,6 @@ namespace BlazorTemplate.Server
             
 
             Services.AddIdentity<ApplicationUser, ApplicationRole>()
-                    .AddUserManager<UserManager<ApplicationUser>>()
-                    .AddRoleManager<RoleManager<ApplicationRole>>()
                     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
                     .AddErrorDescriber<IdentityErrorDescriberJapanese>();
                     //.AddDefaultTokenProviders();
@@ -241,14 +239,14 @@ namespace BlazorTemplate.Server
             app.Map("/allservices", builder => builder.Run(async context =>
             {
                 var sb = new StringBuilder();
-                sb.Append("<h1>All Services</h1>");
+                sb.Append("<h1>全てのサービス</h1>");
                 sb.Append("<table><thead>");
-                sb.Append("<tr><th>Type</th><th>Lifetime</th><th>Instance</th></tr>");
+                sb.Append("<tr><th>タイプ名</th><th>ライフタイム</th><th>インスタンス</th></tr>");
                 sb.Append("</thead><tbody>");
-                foreach (var svc in Services)
+                foreach (var svc in Services.OrderBy(key => key.ServiceType.FullName))
                 {
                     sb.Append("<tr>");
-                    sb.Append($"<td>{svc.ServiceType.FullName}</td>");
+                    sb.Append($"<td>{svc.ServiceType.Name}</td>");
                     sb.Append($"<td>{svc.Lifetime}</td>");
                     sb.Append($"<td>{svc.ImplementationType?.FullName}</td>");
                     sb.Append("</tr>");
