@@ -16,26 +16,29 @@ namespace BlazorTemplate.Server.Controllers
     public class SessionController : ControllerBase
     {
         private AccountService AccountService { get; set; }
+        private SessionService SessionService { get; set; }
         private SpamBlockSharedService SpamBlockService { get; set; }
 
-        public SessionController(AccountService accountService, SpamBlockSharedService spamBlockSharedService)
+        public SessionController(   [FromServices] AccountService accountService,
+                                    [FromServices] SessionService sessionService,
+                                    [FromServices] SpamBlockSharedService spamBlockSharedService)
         {
             AccountService = accountService;
+            SessionService = sessionService;
             SpamBlockService = spamBlockSharedService;
         }
         
         [HttpPost]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([FromBody]LoginRequest request)
+        public async Task<IActionResult> Login( [FromBody] LoginRequest request)
         {
-            // 既にログインしていた場合はBadRequest
             var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
             if (loginResult) return BadRequest();
 
             if (!ModelState.IsValid) return BadRequest();
 
-            var result = await AccountService.Login(request.UserName, request.Password);
+            var result = await SessionService.Login(request.UserName, request.Password);
 
             if (!result.Succeeded) return BadRequest();
 
@@ -47,7 +50,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await AccountService.Logout();
+            await SessionService.Logout();
             return Ok();
         }
 

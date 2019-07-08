@@ -143,6 +143,7 @@ namespace BlazorTemplate.Server
 
                     // アクセスが禁止されているリソースにアクセスしようとしたとき
                     options.AccessDeniedPath = $"/";
+
                     // クッキーの有効期限
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 });
@@ -229,6 +230,7 @@ namespace BlazorTemplate.Server
             //Services.AddServerSideBlazor();
 
             Services.AddScoped<AccountService>();
+            Services.AddScoped<SessionService>();
             Services.AddSingleton<SpamBlockSharedService>();
             //Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
             //Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();

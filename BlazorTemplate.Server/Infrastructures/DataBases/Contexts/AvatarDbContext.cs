@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace BlazorTemplate.Server.Infrastructures.DataBases.Contexts
 {
-    public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class AvatarDbContext<TKey> : DbContext
     {
-        public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
-            : base(options)
-        {
+        public DbSet<Avatar<TKey>> Avatars { get; set; }
 
+        public AvatarDbContext(DbContextOptions<AvatarDbContext<TKey>> options) : base(options)
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

@@ -13,8 +13,8 @@ namespace BlazorTemplate.Server.Services
         UserManager<ApplicationUser> UserManager { get; set; }
         SignInManager<ApplicationUser> SignInManager { get; set; }
 
-        public AccountService( [FromServices]UserManager<ApplicationUser> userManager,
-                               [FromServices]SignInManager<ApplicationUser> signInManager)
+        public AccountService( [FromServices] UserManager<ApplicationUser> userManager,
+                               [FromServices] SignInManager<ApplicationUser> signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -32,17 +32,6 @@ namespace BlazorTemplate.Server.Services
             return (result, password);
         }
         
-        public async Task<SignInResult> Login(string name, string password)
-        {
-            var result = await SignInManager.PasswordSignInAsync(name, password, true, true);
-            return result;
-        }
-
-        public async Task Logout()
-        {
-            await SignInManager.SignOutAsync();
-        }
-
         public async Task<SignInResult> Validate(string userName, string password)
         {
             var user = await UserManager.FindByNameAsync(userName);
