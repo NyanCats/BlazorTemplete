@@ -9,6 +9,7 @@
 @inject WebAssemblyUriHelper UriHelper
 @inject AccountService AccountService
 @inject SessionService SessionService
+@inject AvatarService AvatarService
 
 <div class="container col-md-8" id="login-page">
     <div class="card">
@@ -49,7 +50,7 @@
 
                 <div class="form-group">
                     <div class="text-center">
-                        <button class="btn btn-primary px-4" type="submit" disabled="@ButtonDisabled" >ログイン</button>
+                        <button class="btn btn-primary px-4" type="submit" disabled="@ButtonDisabled">ログイン</button>
                     </div>
                 </div>
 
@@ -81,6 +82,7 @@
         {
             await SessionService.Logout(Http);
             await AccountService.GetUserInfomation(Http);
+            await AvatarService.GetMyAvatar(Http);
             Toaster.Info("既にログインしていたため、ログインページではログアウトされます。");
         }
     }
@@ -93,6 +95,7 @@
         if (loginResult)
         {
             await AccountService.GetUserInfomation(Http);
+            await AvatarService.GetMyAvatar(Http);
             Toaster.Success("ログインしました。");
             UriHelper.NavigateTo("/");
         }

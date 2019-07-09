@@ -15,8 +15,8 @@
 
 @functions
 {
-    ElementRef inputTypeFileElement;
-    byte[] buffer;
+        ElementRef inputTypeFileElement;
+
 
     [Inject]
     protected IToaster Toaster { get; set; }
@@ -35,6 +35,7 @@
     public async Task ReadFile()
     {
         IFileInfo fileInfo = null;
+        byte[] buffer = null;
         foreach (var file in await FileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
         {
             fileInfo = await file.ReadFileInfoAsync();
@@ -43,6 +44,11 @@
                 buffer = new byte[memoryStream.Length];
                 memoryStream.Read(buffer, 0, (int)memoryStream.Length);
             }
+        }
+
+        if (buffer == null)
+        {
+            return;
         }
         var success = await AvatarService.Update(Http, buffer, fileInfo);
 

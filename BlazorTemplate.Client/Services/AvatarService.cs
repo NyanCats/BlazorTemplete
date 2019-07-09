@@ -79,7 +79,12 @@ namespace BlazorTemplate.Client.Services
         {
             // await AddCsrfToken(http, JSRuntime);
             var response = await http.GetAsync("avatar");
-            if (!response.IsSuccessStatusCode) return;
+            if (!response.IsSuccessStatusCode)
+            {
+                MyAvatar = "";
+                OnAvatarChanged(this, MyAvatar);
+                return;
+            }
             var data = await response.Content.ReadAsByteArrayAsync();
             var type = "image/png";
             MyAvatar = $"data:{type};base64,{Convert.ToBase64String(data)}";
