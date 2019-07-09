@@ -29,14 +29,26 @@ namespace BlazorTemplate.Server.Controllers
             AvatarService = avatarService;
         }
 
+        [HttpPost]
+        [Authorize]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateMyAvatar()
+        {
+            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            if (user == null) NotFound();
+
+            await AvatarService.CreateAsync(user, null);
+
+            return Ok();
+        }
+
         [HttpGet]
         [Authorize]
         //[ValidateAntiForgeryToken]
         public async Task<FileStreamResult> GetMyAvatar()
         {
-            var name = HttpContext.User.Identity.Name;
-            var user = await AccountService.GetUser(name);
-            var avatarExisting = await AvatarService.ExistsAsync(user);
+            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            if (user == null) NotFound();
 
             FileStreamResult getDefaultAvatar()
             {
@@ -44,6 +56,7 @@ namespace BlazorTemplate.Server.Controllers
                 return File(stream, "image/png");
             }
 
+            var avatarExisting = await AvatarService.ExistsAsync(user);
             if (!avatarExisting) return getDefaultAvatar();
 
             var avatarImage = await AvatarService.GetImageAsync(user);

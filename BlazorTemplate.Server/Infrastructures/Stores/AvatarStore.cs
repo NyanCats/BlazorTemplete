@@ -52,8 +52,8 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return AvatarDbContext.Avatars.Find(owner.Id);
-            //return await AvatarDbContext.Avatars.FindAsync(owner, cancellationToken);
+            // 要改善(FindAsyncの敗北)
+            return AvatarDbContext.Avatars.Where( a => a.OwnerId == owner.Id).First();
         }
 
         public async Task<bool> UpdateAsync(Avatar avatar, User owner, CancellationToken cancellationToken = default)

@@ -1,0 +1,2 @@
+﻿add-migration InitialCreate -context avatardbcontext -outputdir Infrastructures\DataBases\Migrations\AvatarDb
+update-database -context avatardbcontext

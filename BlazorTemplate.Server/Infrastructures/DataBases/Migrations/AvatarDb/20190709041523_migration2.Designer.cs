@@ -4,14 +4,16 @@ using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
 {
     [DbContext(typeof(AvatarDbContext))]
-    partial class AvatarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190709041523_migration2")]
+    partial class migration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

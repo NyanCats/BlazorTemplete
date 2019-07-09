@@ -27,7 +27,8 @@ namespace BlazorTemplate.Server.Services
 
             var newAvatar = new Avatar()
             {
-                Id = new Guid(),
+                AvatarId = new Guid(),
+                OwnerId = owner.Id,
                 Image = image,
                 LastUpdated = DateTime.Now
             };

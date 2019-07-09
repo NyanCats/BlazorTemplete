@@ -8,6 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709024420_migration4.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709024420_migration4.Designer.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709030001_migration5.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709030001_migration5.Designer.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709030403_migration6.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709030403_migration6.Designer.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709030641_InitialCreate.cs" />
+    <Compile Remove="Infrastructures\DataBases\Migrations\AvatarDb\20190709030641_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190709031553_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190709031553_InitialCreate.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\default.png" />
   </ItemGroup>
 
@@ -54,6 +67,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationResourceJapanese.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

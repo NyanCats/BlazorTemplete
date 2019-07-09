@@ -4,14 +4,16 @@ using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
 {
     [DbContext(typeof(AvatarDbContext))]
-    partial class AvatarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190709031739_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,16 +23,14 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
 
             modelBuilder.Entity("BlazorTemplate.Server.Entities.Avatar", b =>
                 {
-                    b.Property<Guid>("AvatarId")
+                    b.Property<Guid>("OwnerId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("Image");
 
                     b.Property<DateTime?>("LastUpdated");
 
-                    b.Property<Guid>("OwnerId");
-
-                    b.HasKey("AvatarId");
+                    b.HasKey("OwnerId");
 
                     b.ToTable("Avatars");
                 });
