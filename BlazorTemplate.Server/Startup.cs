@@ -29,6 +29,9 @@ using System.Globalization;
 using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using BlazorTemplate.Server.Infrastructures.Stores;
 
 namespace BlazorTemplate.Server
 {
@@ -132,7 +135,7 @@ namespace BlazorTemplate.Server
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services
+            Services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -149,15 +152,17 @@ namespace BlazorTemplate.Server
                 });
 
             
-            services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
+            Services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
             {
-                //options.UseMemoryCache(new MemoryCache(new MemoryCacheOptions()));
-                //options.UseInternalServiceProvider(serviceProvider);
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
-            
+            Services.AddDbContext<AvatarDbContext>((serviceProvider, options) =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("AvatarDbConnection"));
+            });
 
-            Services.AddIdentity<ApplicationUser, ApplicationRole>()
+
+            Services.AddIdentity<User, Role>()
                     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
                     .AddErrorDescriber<IdentityErrorDescriberJapanese>();
                     //.AddDefaultTokenProviders();
@@ -231,7 +236,12 @@ namespace BlazorTemplate.Server
 
             Services.AddScoped<AccountService>();
             Services.AddScoped<SessionService>();
+            Services.AddScoped<AvatarService>();
+
             Services.AddSingleton<SpamBlockSharedService>();
+
+            Services.AddScoped<AvatarStore<Guid>>();
+            
             //Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
             //Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();
         }

@@ -14,27 +14,27 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
 {
     public class AvatarStore<TKey> : IDisposable
     {
-        public AvatarDbContext<TKey> AvatarDbContext { get; private set; }
+        public AvatarDbContext AvatarDbContext { get; private set; }
 
-        public AvatarStore(AvatarDbContext<TKey> avatarDbContext)
+        public AvatarStore(AvatarDbContext avatarDbContext)
         {
             AvatarDbContext = avatarDbContext;
         }
 
-        public async Task<bool> CreateAsync(Avatar<TKey> avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> CreateAsync(Avatar avatar, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             
             if (avatar == null) throw new ArgumentNullException(nameof(avatar));
-
+            
             await AvatarDbContext.AddAsync(avatar, cancellationToken);
             await AvatarDbContext.SaveChangesAsync(cancellationToken);
 
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Avatar<TKey> avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(Avatar avatar, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -47,22 +47,23 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
             return true;
         }
 
-        public async Task<Avatar<TKey>> FindByOwnerIdAsync(TKey ownerId, CancellationToken cancellationToken = default)
+        public async Task<Avatar> FindByOwnerAsync(User owner, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return await AvatarDbContext.FindAsync<Avatar<TKey>>(typeof(TKey), ownerId, cancellationToken);
+            return AvatarDbContext.Avatars.Find(owner.Id);
+            //return await AvatarDbContext.Avatars.FindAsync(owner, cancellationToken);
         }
 
-        public async Task<bool> UpdateAsync(Avatar<TKey> avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateAsync(Avatar avatar, User owner, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
             if (avatar == null) throw new ArgumentNullException(nameof(avatar));
 
-            var existingAvatar = await FindByOwnerIdAsync(avatar.OwnerId, cancellationToken);
+            var existingAvatar = await FindByOwnerAsync(owner, cancellationToken);
             if(existingAvatar == null) return false;
 
             AvatarDbContext.Update(avatar);

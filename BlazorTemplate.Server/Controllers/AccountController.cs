@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using BlazorTemplate.Server.Entities;
 using BlazorTemplate.Server.Services;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlazorTemplate.Server.Controllers
 {
     [Produces("application/json")]
+    [Consumes("application/json")]
     [Route("[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
@@ -32,7 +35,7 @@ namespace BlazorTemplate.Server.Controllers
         [HttpPost]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromBody]CreateUserRequest request) 
+        public async Task<IActionResult> Create( [FromBody]CreateUserRequest request) 
         {
             // ログイン済みか
             var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
@@ -75,7 +78,7 @@ namespace BlazorTemplate.Server.Controllers
         [HttpGet]
         [Authorize]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> UserInfomation()
+        public async Task<IActionResult> Read()
         {
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BlazorTemplate.Server.Infrastructures.DataBases.Contexts
 {
-    public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class ApplicationIdentityDbContext : IdentityDbContext<User, Role, Guid>
     {
         public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
             : base(options)

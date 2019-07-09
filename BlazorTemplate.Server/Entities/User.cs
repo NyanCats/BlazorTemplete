@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace BlazorTemplate.Server.Entities
 {
-    public class ApplicationRole : IdentityRole<Guid>
+    public class User : IdentityUser<Guid>
     {
-        public ApplicationRole()
-        {
 
-        }
     }
 }

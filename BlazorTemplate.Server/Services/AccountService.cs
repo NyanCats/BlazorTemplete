@@ -10,11 +10,11 @@ namespace BlazorTemplate.Server.Services
 {
     public class AccountService
     {
-        UserManager<ApplicationUser> UserManager { get; set; }
-        SignInManager<ApplicationUser> SignInManager { get; set; }
+        UserManager<User> UserManager { get; set; }
+        SignInManager<User> SignInManager { get; set; }
 
-        public AccountService( [FromServices] UserManager<ApplicationUser> userManager,
-                               [FromServices] SignInManager<ApplicationUser> signInManager)
+        public AccountService( [FromServices] UserManager<User> userManager,
+                               [FromServices] SignInManager<User> signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -22,7 +22,7 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<(IdentityResult result, string password)> Create(string name)
         {
-            var user = new ApplicationUser() { UserName = name };
+            var user = new User() { UserName = name };
 
             var password = GeneratePassword();
             var result = await UserManager.CreateAsync(user, password);
@@ -56,7 +56,7 @@ namespace BlazorTemplate.Server.Services
             return true;
         }
 
-        public async Task<ApplicationUser> GetUser(string userName)
+        public async Task<User> GetUser(string userName)
         {
             var user = await UserManager.FindByNameAsync(userName);
 

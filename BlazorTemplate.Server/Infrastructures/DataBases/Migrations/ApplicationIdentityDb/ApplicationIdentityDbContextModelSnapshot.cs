@@ -4,16 +4,14 @@ using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
+namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.ApplicationIdentityDb
 {
     [DbContext(typeof(ApplicationIdentityDbContext))]
-    [Migration("20190706100202_InitialCreate")]
-    partial class InitialCreate
+    partial class ApplicationIdentityDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +19,7 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BlazorTemplate.Server.Entities.ApplicationRole", b =>
+            modelBuilder.Entity("BlazorTemplate.Server.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -45,7 +43,7 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("BlazorTemplate.Server.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("BlazorTemplate.Server.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -181,7 +179,7 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("BlazorTemplate.Server.Entities.ApplicationRole", null)
+                    b.HasOne("BlazorTemplate.Server.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -190,7 +188,7 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("BlazorTemplate.Server.Entities.ApplicationUser", null)
+                    b.HasOne("BlazorTemplate.Server.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -199,7 +197,7 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("BlazorTemplate.Server.Entities.ApplicationUser", null)
+                    b.HasOne("BlazorTemplate.Server.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -208,13 +206,13 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("BlazorTemplate.Server.Entities.ApplicationRole", null)
+                    b.HasOne("BlazorTemplate.Server.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlazorTemplate.Server.Entities.ApplicationUser", null)
+                    b.HasOne("BlazorTemplate.Server.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -223,7 +221,7 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("BlazorTemplate.Server.Entities.ApplicationUser", null)
+                    b.HasOne("BlazorTemplate.Server.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

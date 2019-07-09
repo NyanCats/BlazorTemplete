@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BlazorTemplate.Client.Services
+namespace BlazorTemplate.Server.Services
 {
     public class AvatarService
     {
@@ -21,39 +21,43 @@ namespace BlazorTemplate.Client.Services
         // GetImagesAsync
         // SetDefaultAsync
 
-        public async Task<bool> UpdateAsync(string ownerId, byte[] image, CancellationToken cancellationToken = default)
+        public async Task<bool> CreateAsync(User owner, byte[] image, CancellationToken cancellationToken = default)
         {
-            Guid guid;
-            if (!Guid.TryParse(ownerId, out guid)) return false;
-            if (!ExistsAsync(ownerId, cancellationToken).Result) return false;
+            if (ExistsAsync(owner, cancellationToken).Result) return false;
 
-            var newAvatar = new Avatar<Guid>()
+            var newAvatar = new Avatar()
             {
-                OwnerId = guid,
+                Id = new Guid(),
                 Image = image,
                 LastUpdated = DateTime.Now
             };
 
-            return await AvatarStore.UpdateAsync(newAvatar, cancellationToken);
+            return await AvatarStore.CreateAsync(newAvatar, cancellationToken);
         }
 
-        public async Task<byte[]> GetImageAsync(string ownerId, CancellationToken cancellationToken = default)
-        {
-            Guid guid;
-            if (!Guid.TryParse(ownerId, out guid)) return null;
 
-            var result = await AvatarStore.FindByOwnerIdAsync(guid, cancellationToken);
+        public async Task<bool> UpdateAsync(User owner, byte[] image, CancellationToken cancellationToken = default)
+        {
+            var result = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
+            if (result == null) return false;
+
+            result.Image = image;
+            result.LastUpdated = DateTime.Now;
+
+            return await AvatarStore.UpdateAsync(result, owner, cancellationToken);
+        }
+
+        public async Task<byte[]> GetImageAsync(User owner, CancellationToken cancellationToken = default)
+        {
+            var result = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
 
             if (result == null) return null;
             return result.Image;
         }
 
-        public async Task<bool> ExistsAsync(string ownerId, CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(User owner, CancellationToken cancellationToken = default)
         {
-            Guid guid;
-            if (!Guid.TryParse(ownerId, out guid)) return false;
-
-            var result = await AvatarStore.FindByOwnerIdAsync(guid, cancellationToken);
+            var result = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
             
             if(result == null) return false;
             return true;

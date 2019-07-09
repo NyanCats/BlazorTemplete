@@ -10,11 +10,11 @@ namespace BlazorTemplate.Server.Services
 {
     public class SessionService
     {
-        UserManager<ApplicationUser> UserManager { get; set; }
-        SignInManager<ApplicationUser> SignInManager { get; set; }
+        UserManager<User> UserManager { get; set; }
+        SignInManager<User> SignInManager { get; set; }
 
-        public SessionService(  [FromServices] UserManager<ApplicationUser> userManager,
-                                [FromServices] SignInManager<ApplicationUser> signInManager)
+        public SessionService(  [FromServices] UserManager<User> userManager,
+                                [FromServices] SignInManager<User> signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
