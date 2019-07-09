@@ -53,7 +53,7 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
             ThrowIfDisposed();
 
             // 要改善(FindAsyncの敗北)
-            return AvatarDbContext.Avatars.Where( a => a.OwnerId == owner.Id).First();
+            return AvatarDbContext.Avatars.Where( a => a.OwnerId == owner.Id).FirstOrDefault();
         }
 
         public async Task<bool> UpdateAsync(Avatar avatar, User owner, CancellationToken cancellationToken = default)

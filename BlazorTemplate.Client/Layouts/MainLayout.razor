@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @inject SessionService SessionService
 @inject AccountService AccountService
+@inject AvatarService AvatarService
 
 <RegionHeader />
 
@@ -37,6 +38,7 @@
         if (result)
         {
             await AccountService.GetUserInfomation(Http);
+            //await AvatarService.(Http);
             Toaster.Success("自動ログインしました。");
         }
 

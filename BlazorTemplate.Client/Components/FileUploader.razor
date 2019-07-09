@@ -1,0 +1,46 @@
+﻿@using Sotsera.Blazor.Toaster
+@using System.IO;
+@using Blazor.FileReader;
+@using Sotsera.Blazor.Toaster;
+
+@inject HttpClient Http
+@inject IUriHelper UriHelper
+@inject SessionService SessionService
+@inject AccountService AccountService
+@inject AvatarService AvatarService
+@inject IFileReaderService FileReaderService;
+
+<img src="./avatar" />
+<input type="file" @ref="@inputTypeFileElement" />
+<button @onclick="@ReadFile">Read file</button>
+
+@functions
+{
+    ElementRef inputTypeFileElement;
+    byte[] buffer;
+
+    [Inject]
+    protected IToaster Toaster { get; set; }
+
+    public async Task ReadFile()
+    {
+        foreach (var file in await FileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+        {
+            using (MemoryStream memoryStream = await file.CreateMemoryStreamAsync(4096))
+            {
+                buffer = new byte[memoryStream.Length];
+                memoryStream.Read(buffer, 0, (int)memoryStream.Length);
+                Console.WriteLine(memoryStream.Position);
+            }
+        }
+        var success = await AvatarService.Update(Http, buffer);
+
+        if (!success)
+        {
+            Toaster.Error("アバターの更新に失敗しました。");
+            return;
+        }
+        Toaster.Success("アバターが更新されました。");
+        StateHasChanged();
+    }
+}

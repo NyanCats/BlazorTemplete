@@ -1,3 +1,4 @@
+using Blazor.FileReader;
 using BlazorTemplate.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Builder;
@@ -10,6 +11,7 @@ namespace BlazorTemplate.Client
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddFileReaderService();
             services.AddToaster(config =>
             {
                 config.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -18,6 +20,8 @@ namespace BlazorTemplate.Client
             });
             services.AddSingleton<AccountService>();
             services.AddSingleton<SessionService>();
+            services.AddSingleton<AvatarService>();
+            
             //services.AddAuthorizationCore();
         }
         

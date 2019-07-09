@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
@@ -35,7 +36,7 @@ namespace BlazorTemplate.Server.Controllers
         public async Task<IActionResult> CreateMyAvatar()
         {
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
-            if (user == null) NotFound();
+            if (user == null) BadRequest();
 
             await AvatarService.CreateAsync(user, null);
 
@@ -64,6 +65,28 @@ namespace BlazorTemplate.Server.Controllers
             if(avatarImage == null) return getDefaultAvatar();
 
             return File(new MemoryStream(avatarImage), "image/png");
+        }
+
+        [HttpPut]
+        [Authorize]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateMyAvatar(IFormFile file)
+        {
+            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            if (user == null) BadRequest(); 
+            if (file == null) BadRequest();
+
+            byte[] buffer;
+            using (var stream = file.OpenReadStream())
+            {
+                buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, (int)stream.Length);
+            }
+                
+            var success = await AvatarService.UpdateAsync(user, buffer);
+
+            if (!success) BadRequest();
+            return Ok();
         }
     }
 }

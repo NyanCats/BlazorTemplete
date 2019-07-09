@@ -84,7 +84,7 @@ namespace BlazorTemplate.Server
         public void ConfigureServices(IServiceCollection services)
         {
             Services = services;
-
+            
             Services.AddResponseCompression(options =>
             {
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
@@ -93,7 +93,7 @@ namespace BlazorTemplate.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
-
+            
             /*
             Services.AddAntiforgery(options =>
             {
