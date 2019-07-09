@@ -38,10 +38,10 @@
         if (result)
         {
             await AccountService.GetUserInfomation(Http);
-            //await AvatarService.(Http);
+            await AvatarService.GetMyAvatar(Http);
+
             Toaster.Success("自動ログインしました。");
         }
-
         StateHasChanged();
     }
 }

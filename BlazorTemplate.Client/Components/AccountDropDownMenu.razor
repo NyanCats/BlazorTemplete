@@ -2,6 +2,7 @@
 @inject IUriHelper UriHelper
 @inject SessionService SessionService
 @inject AccountService AccountService
+@inject AvatarService AvatarService
 
 @using Sotsera.Blazor.Toaster
 
@@ -10,7 +11,7 @@
     <ul class="nav navbar-nav ml-auto">
         <li class="nav-item dropdown">
             <button class="nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                <img class="img-avatar" src="./avatar">
+                <img class="img-avatar" src="@Avatar" />
             </button>
             <div class="dropdown-menu dropdown-menu-right">
                 <div class="dropdown-header">
@@ -39,6 +40,7 @@ else
 {
     bool IsLogin { get; set; } = false;
     string UserName { get; set; } = "";
+    string Avatar { get; set; }
 
     [Inject]
     protected IToaster Toaster { get; set; }
@@ -53,12 +55,19 @@ else
     protected override void OnInit()
     {
         AccountService.UserInfomationChanged += OnUserInfomationChanged;
+        AvatarService.AvatarChanged += OnAvatarChanged;
     }
 
     protected void OnUserInfomationChanged(object sender, UserInfomationEventArgs e)
     {
         IsLogin = e.IsValid;
         UserName = e.UserName;
+        StateHasChanged();
+    }
+
+    protected void OnAvatarChanged(object sender, string avatar)
+    {
+        Avatar = avatar;
         StateHasChanged();
     }
 }

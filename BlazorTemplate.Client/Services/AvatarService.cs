@@ -1,24 +1,22 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-
-using BlazorTemplate.Shared.WebApis.Accounts;
 using System.Threading;
 using System.Net.Http.Headers;
 using System.IO;
+using Blazor.FileReader;
+using System;
 
 namespace BlazorTemplate.Client.Services
 {
-    public delegate void AvatarEventHandler(object sender, AvatarEventArgs e);
+    public delegate void AvatarEventHandler(object sender, string avatar);
 
     public class AvatarService : ClientServiceBase
     {
         public event AvatarEventHandler AvatarChanged;
 
-        public  
+        public string MyAvatar { get; protected set; }
+
         private IJSRuntime JSRuntime { get; set; }
 
         public AvatarService(IJSRuntime jsRuntime)
@@ -28,14 +26,14 @@ namespace BlazorTemplate.Client.Services
 
 
 
-        protected virtual void OnAvatarChanged(object sender, AvatarEventArgs e)
+        protected virtual void OnAvatarChanged(object sender, string avatar)
         {
-            AvatarChanged?.Invoke(this, e);
+            AvatarChanged?.Invoke(this, avatar);
         }
 
         
 
-        public async Task<bool> Update(HttpClient http, byte[] data, CancellationToken cancellationToken = default)
+        public async Task<bool> Update(HttpClient http, byte[] data, IFileInfo fileInfo, CancellationToken cancellationToken = default)
         {
             HttpResponseMessage response;
             // await AddCsrfToken(http, JSRuntime);
@@ -46,14 +44,13 @@ namespace BlazorTemplate.Client.Services
                 streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
                 {
                     Name = "file",
-                    FileName = "avatar.png"
+                    FileName = fileInfo.Name
                 };
-                streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue(fileInfo.Type);
                 content.Add(streamContent);
 
                 response = await http.PutAsync("avatar", content, cancellationToken);
 
-                OnAvatarChanged(this, new AvatarEventArgs());
                 return response.IsSuccessStatusCode;
             }
         }
@@ -77,31 +74,17 @@ namespace BlazorTemplate.Client.Services
             return true;
         }
         */
-        /*
-        public async Task<UserInfomationResult> GetMyAvatar(HttpClient http)
+        
+        public async Task GetMyAvatar(HttpClient http)
         {
             // await AddCsrfToken(http, JSRuntime);
-            try
-            {
-                var response = await http.GetAsync("avatar");
-                OnAvatarChanged(this, new AvatarEventArgs());
-                return response;
-            }
-            catch (Exception e)
-            {
-                OnAvatarChanged(this, new AvatarEventArgs());
-                return null;
-            }
-        }*/
-    }
+            var response = await http.GetAsync("avatar");
+            if (!response.IsSuccessStatusCode) return;
+            var data = await response.Content.ReadAsByteArrayAsync();
+            var type = "image/png";
+            MyAvatar = $"data:{type};base64,{Convert.ToBase64String(data)}";
 
-    public class AvatarEventArgs
-    {
-
-
-        public AvatarEventArgs()
-        {
-
+            OnAvatarChanged(this, MyAvatar);
         }
     }
 }

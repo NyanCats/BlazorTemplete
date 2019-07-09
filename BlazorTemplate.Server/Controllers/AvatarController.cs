@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorTemplate.Server.Controllers
 {
-    [Produces("application/json")]
+    //[Produces("application/json")]
     [Route("[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
@@ -46,7 +46,7 @@ namespace BlazorTemplate.Server.Controllers
         [HttpGet]
         [Authorize]
         //[ValidateAntiForgeryToken]
-        public async Task<FileStreamResult> GetMyAvatar()
+        public async Task<IActionResult> GetMyAvatar()
         {
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
             if (user == null) NotFound();
@@ -58,13 +58,13 @@ namespace BlazorTemplate.Server.Controllers
             }
 
             var avatarExisting = await AvatarService.ExistsAsync(user);
-            if (!avatarExisting) return getDefaultAvatar();
+            if (!avatarExisting) return Ok(getDefaultAvatar());
 
             var avatarImage = await AvatarService.GetImageAsync(user);
 
-            if(avatarImage == null) return getDefaultAvatar();
-
-            return File(new MemoryStream(avatarImage), "image/png");
+            if(avatarImage == null) return Ok(getDefaultAvatar());
+            
+            return Ok(new MemoryStream(avatarImage));
         }
 
         [HttpPut]
