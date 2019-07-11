@@ -68,6 +68,7 @@ namespace BlazorTemplate.Client.Services
             try
             {
                 var response = await http.GetJsonAsync<UserInfomationResult>("account");
+                Console.WriteLine("test");
                 OnUserInfomationChanged(this, new UserInfomationEventArgs(true, response.UserName));
                 return response;
             }

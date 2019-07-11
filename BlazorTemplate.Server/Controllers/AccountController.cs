@@ -15,8 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorTemplate.Server.Controllers
 {
-    [Produces("application/json")]
-    [Consumes("application/json")]
+    //[Produces("application/json")]
+    //[Consumes("application/json")]
     [Route("[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
