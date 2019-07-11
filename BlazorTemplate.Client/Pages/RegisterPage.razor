@@ -145,19 +145,21 @@
 
     async Task RegisterAccount()
     {
-        try
-        {
-            CreateUserResult = await AccountService.Create(Http, CreateUserRequest);
+        CreateUserResult result;
 
-            await JSRuntime.InvokeAsync<bool>("showRegisterModal");
+        result = await AccountService.Create(Http, CreateUserRequest);
 
-            StateHasChanged();
-        }
-        catch (Exception e)
+        if(result == null)
         {
             Toaster.Warning("新規登録に失敗しました。");
             UriHelper.NavigateTo("/");
+            return;
         }
+
+        CreateUserResult = result;
+        await JSRuntime.InvokeAsync<bool>("showRegisterModal");
+
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync()

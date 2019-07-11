@@ -21,7 +21,7 @@ namespace BlazorTemplate.Server.Services
         // GetImagesAsync
         // SetDefaultAsync
 
-        public async Task<bool> CreateAsync(User owner, byte[] image, CancellationToken cancellationToken = default)
+        public async Task<bool> CreateAsync(User owner, CancellationToken cancellationToken = default)
         {
             if (ExistsAsync(owner, cancellationToken).Result) return false;
 
@@ -29,7 +29,7 @@ namespace BlazorTemplate.Server.Services
             {
                 AvatarId = new Guid(),
                 OwnerId = owner.Id,
-                Image = image,
+                Image = null,
                 LastUpdated = DateTime.Now
             };
 

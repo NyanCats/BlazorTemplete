@@ -95,7 +95,14 @@
         if (loginResult)
         {
             await AccountService.GetUserInfomation(Http);
-            await AvatarService.GetMyAvatar(Http);
+            var avatarResult = await AvatarService.GetMyAvatar(Http);
+
+            if(!avatarResult)
+            {
+                await AvatarService.Create(Http);
+                await AvatarService.GetMyAvatar(Http);
+            }
+
             Toaster.Success("ログインしました。");
             UriHelper.NavigateTo("/");
         }

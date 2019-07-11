@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
+using BlazorTemplate.Shared.WebApis.Avatars;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,13 +33,14 @@ namespace BlazorTemplate.Server.Controllers
 
         [HttpPost]
         [Authorize]
+        [Produces("application/json")]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateMyAvatar()
+        public async Task<IActionResult> CreateMyAvatar( [FromBody] CreateAvatarRequest request)
         {
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
             if (user == null) BadRequest();
 
-            await AvatarService.CreateAsync(user, null);
+            await AvatarService.CreateAsync(user);
 
             return Ok();
         }
@@ -49,16 +51,21 @@ namespace BlazorTemplate.Server.Controllers
         public async Task<IActionResult> GetMyAvatar()
         {
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
-            if (user == null) NotFound();
+            if (user == null) BadRequest();
 
-            FileStreamResult getDefaultAvatar()
+            MemoryStream getDefaultAvatar()
             {
-                var stream = new FileStream(@"Resources/default.png", FileMode.Open);
-                return File(stream, "image/png");
+                var stream = new FileStream(@"Resources/default.png", FileMode.Open, FileAccess.Read);
+                byte[] buffer = new byte[stream.Length];
+
+                stream.Read(buffer, 0, buffer.Length);
+
+                return new MemoryStream(buffer);
             }
 
             var avatarExisting = await AvatarService.ExistsAsync(user);
-            if (!avatarExisting) return Ok(getDefaultAvatar());
+
+            if (!avatarExisting) return NotFound(getDefaultAvatar());
 
             var avatarImage = await AvatarService.GetImageAsync(user);
 
@@ -76,13 +83,15 @@ namespace BlazorTemplate.Server.Controllers
             if (user == null) BadRequest(); 
             if (file == null) BadRequest();
 
+            // TODO: check filesize & format
+
             byte[] buffer;
             using (var stream = file.OpenReadStream())
             {
                 buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, (int)stream.Length);
             }
-                
+
             var success = await AvatarService.UpdateAsync(user, buffer);
 
             if (!success) BadRequest();

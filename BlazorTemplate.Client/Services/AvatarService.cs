@@ -6,6 +6,8 @@ using System.Net.Http.Headers;
 using System.IO;
 using Blazor.FileReader;
 using System;
+using BlazorTemplate.Shared.WebApis.Avatars;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorTemplate.Client.Services
 {
@@ -31,7 +33,18 @@ namespace BlazorTemplate.Client.Services
             AvatarChanged?.Invoke(this, avatar);
         }
 
-        
+        public async Task<bool> Create(HttpClient http, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await http.PostJsonAsync("avatar", new CreateAvatarRequest());
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
+        }
 
         public async Task<bool> Update(HttpClient http, byte[] data, IFileInfo fileInfo, CancellationToken cancellationToken = default)
         {
@@ -75,7 +88,7 @@ namespace BlazorTemplate.Client.Services
         }
         */
         
-        public async Task GetMyAvatar(HttpClient http)
+        public async Task<bool> GetMyAvatar(HttpClient http)
         {
             // await AddCsrfToken(http, JSRuntime);
             var response = await http.GetAsync("avatar");
@@ -83,13 +96,15 @@ namespace BlazorTemplate.Client.Services
             {
                 MyAvatar = "";
                 OnAvatarChanged(this, MyAvatar);
-                return;
+                return false;
             }
             var data = await response.Content.ReadAsByteArrayAsync();
+            // TODO:
             var type = "image/png";
             MyAvatar = $"data:{type};base64,{Convert.ToBase64String(data)}";
 
             OnAvatarChanged(this, MyAvatar);
+            return true;
         }
     }
 }

@@ -34,7 +34,17 @@ namespace BlazorTemplate.Client.Services
         public async Task<CreateUserResult> Create(HttpClient http, CreateUserRequest request)
         {
             // await AddCsrfToken(http, JSRuntime);
-            return await http.PostJsonAsync<CreateUserResult>("account", request);
+
+            CreateUserResult result;
+            try
+            {
+                result = await http.PostJsonAsync<CreateUserResult>("account", request);
+            }
+            catch
+            {
+                return null;
+            }
+            return result;
         }
 
         public async Task<bool> Delete(HttpClient http)
