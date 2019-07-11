@@ -9,13 +9,13 @@
 @inject AvatarService AvatarService
 @inject IFileReaderService FileReaderService
 
-<img src="@AvatarService.MyAvatar" />
+<!--<img src="@AvatarService.MyAvatar" />-->
 <input type="file" @ref="@inputTypeFileElement" />
 <button @onclick="@ReadFile">アバターの変更</button>
 
 @functions
 {
-        ElementRef inputTypeFileElement;
+    ElementRef inputTypeFileElement;
 
 
     [Inject]

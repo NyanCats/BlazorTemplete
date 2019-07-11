@@ -33,7 +33,6 @@ namespace BlazorTemplate.Server.Controllers
 
         [HttpPost]
         [Authorize]
-        [Produces("application/json")]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateMyAvatar( [FromBody] CreateAvatarRequest request)
         {

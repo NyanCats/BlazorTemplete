@@ -1,0 +1,56 @@
+﻿@using Sotsera.Blazor.Toaster;
+@using System.IO;
+@using Blazor.FileReader;
+@inject HttpClient Http
+@inject IUriHelper UriHelper
+@inject SessionService SessionService
+@inject AccountService AccountService
+@inject AvatarService AvatarService
+@inject IFileReaderService FileReaderService
+@implements IDisposable
+
+<style>
+.my-avatar {
+    display: inline-block;
+    background-color: #ccc;
+    background-position: center center;
+    background-repeat: no-repeat;
+    margin: 5px;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #ccc;
+    background-size: cover;
+    border-radius: 50px;
+}
+</style>
+
+<div class="avatar-container">
+    <span class="my-avatar" style="background-image: url('@AvatarImage')"></span>
+</div>
+
+
+@functions
+{
+    string AvatarImage { get; set; }
+
+    protected override Task OnInitAsync()
+    {
+        AvatarService.AvatarChanged += OnAvatarChanged;
+        if(!string.IsNullOrEmpty(AvatarService.MyAvatar))
+        {
+            AvatarImage = AvatarService.MyAvatar;
+        }
+        return base.OnInitAsync();
+    }
+
+    protected void OnAvatarChanged(object sender, string avatar)
+    {
+        AvatarImage = avatar;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AvatarService.AvatarChanged -= OnAvatarChanged;
+    }
+}
