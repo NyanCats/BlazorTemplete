@@ -40,7 +40,9 @@ namespace BlazorTemplate.Server.Controllers
             var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
             if (user == null) BadRequest();
 
-            await AvatarService.CreateAsync(user);
+            var createResult = await AvatarService.CreateAsync(user);
+
+            if (!createResult) BadRequest();
 
             return Ok();
         }
