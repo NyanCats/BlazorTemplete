@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47159CA9-81CC-43E9-96C0-5D79D4819ABA}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSES\ASP_DOTNET_Core.txt = LICENSES\ASP_DOTNET_Core.txt
+		BlazorFileReader.txt = BlazorFileReader.txt
 		LICENSES\bootstrap.txt = LICENSES\bootstrap.txt
 		LICENSES\coreui.txt = LICENSES\coreui.txt
 		LICENSES\DOTNET_Standard.txt = LICENSES\DOTNET_Standard.txt
