@@ -36,6 +36,7 @@
     protected override Task OnInitAsync()
     {
         AvatarService.AvatarChanged += OnAvatarChanged;
+
         if(!string.IsNullOrEmpty(AvatarService.MyAvatar))
         {
             AvatarImage = AvatarService.MyAvatar;
