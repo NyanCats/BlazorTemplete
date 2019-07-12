@@ -1,0 +1,2 @@
+﻿add-migration migration1 -context ApplicationIdentityDbcontext -outputdir Infrastructures\DataBases\Migrations
+update-database -context ApplicationIdentityDbcontext

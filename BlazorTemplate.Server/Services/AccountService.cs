@@ -25,7 +25,6 @@ namespace BlazorTemplate.Server.Services
             var user = new User()
             {
                 UserName = name
-                
             };
             
             var password = GeneratePassword();

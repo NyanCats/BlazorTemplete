@@ -16,7 +16,6 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
     {
         public AvatarDbContext AvatarDbContext { get; private set; }
 
-        // TODO: Review database structure.
         public UserAvatarStore(AvatarDbContext avatarDbContext)
         {
             AvatarDbContext = avatarDbContext;
