@@ -22,19 +22,19 @@ namespace BlazorTemplate.Server.Services
             SignInManager = signInManager;
         }
 
-        public async Task<SignInResult> Login(string name, string password)
+        public async Task<SignInResult> LoginAsync(string name, string password)
         {
             var result = await SignInManager.PasswordSignInAsync(name, password, true, true);
             
             return result;
         }
 
-        public async Task Logout()
+        public async Task LogoutAsync()
         {
             await SignInManager.SignOutAsync();
         }
 
-        public async Task<bool> ValidateCookie(HttpContext context)
+        public async Task<bool> ValidateCookieAsync(HttpContext context)
         {
             var authResult = await context.AuthenticateAsync();
             return authResult.Succeeded;

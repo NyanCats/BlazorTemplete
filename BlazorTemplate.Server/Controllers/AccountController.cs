@@ -38,7 +38,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( [FromBody]CreateUserRequest request) 
         {
-            if(SessionService.ValidateCookie(HttpContext).Result) return BadRequest();
+            if(SessionService.ValidateCookieAsync(HttpContext).Result) return BadRequest();
             if (!ModelState.IsValid) return BadRequest();
 
             /*
