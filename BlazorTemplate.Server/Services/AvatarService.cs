@@ -33,6 +33,14 @@ namespace BlazorTemplate.Server.Services
             return result;
         }
 
+        public async Task<byte[]> GetImageAsync(Guid avatarId, CancellationToken cancellationToken = default)
+        {
+            var result = await AvatarStore.ReadByIdAsync(avatarId, cancellationToken);
+            if (result == null) return null;
+
+            return result.Image;
+        }
+
         public async Task<byte[]> GetImageAsync(User owner, CancellationToken cancellationToken = default)
         {
             var result = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
