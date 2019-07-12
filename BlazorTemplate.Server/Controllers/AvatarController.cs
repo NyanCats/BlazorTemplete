@@ -22,7 +22,6 @@ namespace BlazorTemplate.Server.Controllers
     public class AvatarController : ControllerBase
     {
         private AccountService AccountService { get; set; }
-
         private AvatarService AvatarService { get; set; }
 
         public AvatarController(AccountService accountService, AvatarService avatarService)
