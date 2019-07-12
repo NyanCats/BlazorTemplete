@@ -1,4 +1,6 @@
 ﻿using BlazorTemplate.Server.Entities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -23,12 +25,19 @@ namespace BlazorTemplate.Server.Services
         public async Task<SignInResult> Login(string name, string password)
         {
             var result = await SignInManager.PasswordSignInAsync(name, password, true, true);
+            
             return result;
         }
 
         public async Task Logout()
         {
             await SignInManager.SignOutAsync();
+        }
+
+        public async Task<bool> ValidateCookie(HttpContext context)
+        {
+            var authResult = await context.AuthenticateAsync();
+            return authResult.Succeeded;
         }
     }
 }

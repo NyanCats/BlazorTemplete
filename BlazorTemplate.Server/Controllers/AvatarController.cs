@@ -36,7 +36,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateMyAvatar( [FromBody] CreateAvatarRequest request)
         {
-            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) BadRequest();
 
             var createResult = await AvatarService.CreateAsync(user);
@@ -51,7 +51,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> GetMyAvatar()
         {
-            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) BadRequest();
 
             MemoryStream getDefaultAvatar()
@@ -80,7 +80,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateMyAvatar(IFormFile file)
         {
-            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) BadRequest(); 
             if (file == null) BadRequest();
 

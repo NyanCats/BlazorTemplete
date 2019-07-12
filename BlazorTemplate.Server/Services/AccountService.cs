@@ -22,8 +22,12 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<(IdentityResult result, string password)> Create(string name)
         {
-            var user = new User() { UserName = name };
-
+            var user = new User()
+            {
+                UserName = name
+                
+            };
+            
             var password = GeneratePassword();
             var result = await UserManager.CreateAsync(user, password);
             
@@ -32,7 +36,7 @@ namespace BlazorTemplate.Server.Services
             return (result, password);
         }
         
-        public async Task<SignInResult> Validate(string userName, string password)
+        public async Task<SignInResult> ValidateAsync(string userName, string password)
         {
             var user = await UserManager.FindByNameAsync(userName);
 
@@ -40,7 +44,7 @@ namespace BlazorTemplate.Server.Services
             return result;
         }
 
-        public async Task<bool> IdExists(string id)
+        public async Task<bool> IdExistsAsync(string id)
         {
             var user = await UserManager.FindByIdAsync(id);
             if (user == null) return false;
@@ -48,7 +52,7 @@ namespace BlazorTemplate.Server.Services
             return true;
         }
 
-        public async Task<bool> UserExists(string userName)
+        public async Task<bool> UserExistsAsync(string userName)
         {
             var user = await UserManager.FindByNameAsync(userName);
             if (user == null) return false;
@@ -56,11 +60,9 @@ namespace BlazorTemplate.Server.Services
             return true;
         }
 
-        public async Task<User> GetUser(string userName)
+        public async Task<User> FindByNameAsync(string userName)
         {
-            var user = await UserManager.FindByNameAsync(userName);
-
-            return user;
+            return await UserManager.FindByNameAsync(userName);
         }
 
         protected string GeneratePassword()

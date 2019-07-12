@@ -24,12 +24,13 @@ namespace BlazorTemplate.Server.Controllers
     {
         private AccountService AccountService { get; set; }
         private SpamBlockSharedService SpamBlockService { get; set; }
+        private SessionService SessionService { get; set; }
 
-
-        public AccountController(AccountService accountService, SpamBlockSharedService spamBlockSharedService)
+        public AccountController(AccountService accountService, SpamBlockSharedService spamBlockSharedService, SessionService sessionService)
         {
             AccountService = accountService;
             SpamBlockService = spamBlockSharedService;
+            SessionService = sessionService;
         }
 
         [HttpPost]
@@ -37,11 +38,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( [FromBody]CreateUserRequest request) 
         {
-            // ログイン済みか
-            var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
-            if(loginResult) return BadRequest();
-
-            // モデルの検証
+            if(SessionService.ValidateCookie(HttpContext).Result) return BadRequest();
             if (!ModelState.IsValid) return BadRequest();
 
             /*
@@ -80,7 +77,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Read()
         {
-            var user = await AccountService.GetUser(HttpContext.User.Identity.Name);
+            var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();
 
             return Ok(new UserInfomationResult(user.UserName));
@@ -92,6 +89,11 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Update()
         {
+            var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
+            if (user == null) return BadRequest();
+
+
+
             throw new NotImplementedException();
         }
 

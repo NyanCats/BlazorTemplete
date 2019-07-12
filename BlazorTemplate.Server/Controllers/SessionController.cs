@@ -33,9 +33,7 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login( [FromBody] LoginRequest request)
         {
-            var loginResult = HttpContext.AuthenticateAsync().Result.Succeeded;
-            if (loginResult) return BadRequest();
-
+            if (SessionService.ValidateCookie(HttpContext).Result) return BadRequest();
             if (!ModelState.IsValid) return BadRequest();
 
             var result = await SessionService.Login(request.UserName, request.Password);
@@ -58,9 +56,8 @@ namespace BlazorTemplate.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ValidateCookie()
         {
-            var result = await HttpContext.AuthenticateAsync();
-
-            if(!result.Succeeded) return Unauthorized();
+            var result = await SessionService.ValidateCookie(HttpContext);
+            if (!result) return Unauthorized();
 
             return Ok();
         }
