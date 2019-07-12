@@ -83,11 +83,8 @@ namespace BlazorTemplate.Server.Controllers
             if (user == null) BadRequest(); 
             if (file == null) BadRequest();
 
-            var avatarExisting = await AvatarService.ExistsAsync(user);
-            if(!avatarExisting) BadRequest();
-
             // TODO: check filesize & format
-
+            
             byte[] buffer;
             using (var stream = file.OpenReadStream())
             {

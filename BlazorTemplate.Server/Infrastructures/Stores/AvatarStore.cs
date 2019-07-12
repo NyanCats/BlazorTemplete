@@ -59,9 +59,6 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
 
             if (avatar == null) throw new ArgumentNullException(nameof(avatar));
 
-            var existingAvatar = await ReadByOwnerAsync(owner, cancellationToken);
-            if(existingAvatar == null) return false;
-
             AvatarDbContext.Update(avatar);
             await AvatarDbContext.SaveChangesAsync(cancellationToken);
 
