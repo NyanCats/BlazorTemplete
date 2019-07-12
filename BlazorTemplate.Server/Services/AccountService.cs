@@ -20,7 +20,7 @@ namespace BlazorTemplate.Server.Services
             SignInManager = signInManager;
         }
 
-        public async Task<(IdentityResult result, string password)> Create(string name)
+        public async Task<(IdentityResult result, string password)> CreateAsync(string name)
         {
             var user = new User()
             {
@@ -44,20 +44,33 @@ namespace BlazorTemplate.Server.Services
             return result;
         }
 
-        public async Task<bool> IdExistsAsync(string id)
+        public async Task<bool> ExistsByUserAsync(User user)
         {
-            var user = await UserManager.FindByIdAsync(id);
+            var result = await UserManager.FindByIdAsync(user.Id.ToString());
+            if (result == null) return false;
+
+            return true;
+        }
+
+        public async Task<bool> ExistsByIdAsync(Guid id)
+        {
+            var user = await UserManager.FindByIdAsync(id.ToString());
             if (user == null) return false;
 
             return true;
         }
 
-        public async Task<bool> UserExistsAsync(string userName)
+        public async Task<bool> ExistsByNameAsync(string userName)
         {
             var user = await UserManager.FindByNameAsync(userName);
             if (user == null) return false;
 
             return true;
+        }
+
+        public async Task<User> FindByIdAsync(Guid id)
+        {
+            return await UserManager.FindByIdAsync(id.ToString());
         }
 
         public async Task<User> FindByNameAsync(string userName)
@@ -68,7 +81,7 @@ namespace BlazorTemplate.Server.Services
         protected string GeneratePassword()
         {
             var bs = new byte[24];
-
+            
             using (var rng = new RNGCryptoServiceProvider())
             {
                 rng.GetBytes(bs);

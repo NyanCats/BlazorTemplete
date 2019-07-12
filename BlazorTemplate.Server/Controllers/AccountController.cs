@@ -63,7 +63,7 @@ namespace BlazorTemplate.Server.Controllers
             }
             */
 
-            (IdentityResult result, string password) = await AccountService.Create(request.UserName);
+            (IdentityResult result, string password) = await AccountService.CreateAsync(request.UserName);
 
             if (!result.Succeeded) return BadRequest();
 
@@ -91,8 +91,6 @@ namespace BlazorTemplate.Server.Controllers
         {
             var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();
-
-
 
             throw new NotImplementedException();
         }
