@@ -11,13 +11,25 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
                 name: "Avatars",
                 columns: table => new
                 {
-                    OwnerId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     Image = table.Column<byte[]>(nullable: true),
                     LastUpdated = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Avatars", x => x.OwnerId);
+                    table.PrimaryKey("PK_Avatars", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAvatar",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(nullable: false),
+                    AvatarId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAvatar", x => x.UserId);
                 });
         }
 
@@ -25,6 +37,9 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
         {
             migrationBuilder.DropTable(
                 name: "Avatars");
+
+            migrationBuilder.DropTable(
+                name: "UserAvatar");
         }
     }
 }

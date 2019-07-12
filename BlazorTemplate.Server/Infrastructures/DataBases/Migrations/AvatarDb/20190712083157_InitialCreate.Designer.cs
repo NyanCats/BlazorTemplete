@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
 {
     [DbContext(typeof(AvatarDbContext))]
-    [Migration("20190709042755_migration3")]
-    partial class migration3
+    [Migration("20190712083157_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,17 +23,28 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
 
             modelBuilder.Entity("BlazorTemplate.Server.Entities.Avatar", b =>
                 {
-                    b.Property<Guid>("AvatarId");
-
-                    b.Property<Guid>("OwnerId");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("Image");
 
                     b.Property<DateTime?>("LastUpdated");
 
-                    b.HasKey("AvatarId", "OwnerId");
+                    b.HasKey("Id");
 
                     b.ToTable("Avatars");
+                });
+
+            modelBuilder.Entity("BlazorTemplate.Server.Entities.UserAvatar", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AvatarId");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserAvatar");
                 });
 #pragma warning restore 612, 618
         }

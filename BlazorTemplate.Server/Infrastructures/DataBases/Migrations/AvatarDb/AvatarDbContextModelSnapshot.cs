@@ -21,18 +21,28 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Migrations.AvatarDb
 
             modelBuilder.Entity("BlazorTemplate.Server.Entities.Avatar", b =>
                 {
-                    b.Property<Guid>("AvatarId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("Image");
 
                     b.Property<DateTime?>("LastUpdated");
 
-                    b.Property<Guid>("OwnerId");
-
-                    b.HasKey("AvatarId");
+                    b.HasKey("Id");
 
                     b.ToTable("Avatars");
+                });
+
+            modelBuilder.Entity("BlazorTemplate.Server.Entities.UserAvatar", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AvatarId");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserAvatar");
                 });
 #pragma warning restore 612, 618
         }

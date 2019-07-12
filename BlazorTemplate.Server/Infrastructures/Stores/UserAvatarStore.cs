@@ -12,58 +12,63 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BlazorTemplate.Server.Infrastructures.Stores
 {
-    public class AvatarStore : IDisposable
+    public class UserAvatarStore : IDisposable
     {
         public AvatarDbContext AvatarDbContext { get; private set; }
 
         // TODO: Review database structure.
-        public AvatarStore(AvatarDbContext avatarDbContext)
+        public UserAvatarStore(AvatarDbContext avatarDbContext)
         {
             AvatarDbContext = avatarDbContext;
         }
 
-        public async Task<bool> CreateAsync(Avatar avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> CreateAsync(User user, Avatar avatar, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             
+            if (user == null) throw new ArgumentNullException(nameof(user));
             if (avatar == null) throw new ArgumentNullException(nameof(avatar));
-            
-            await AvatarDbContext.AddAsync(avatar, cancellationToken);
+
+            var newUserAvatar = new UserAvatar() { UserId = user.Id, AvatarId = avatar.Id };
+
+            await AvatarDbContext.UserAvatar.AddAsync(newUserAvatar, cancellationToken);
             await AvatarDbContext.SaveChangesAsync(cancellationToken);
 
             return true;
         }
 
-        public async Task<Avatar> ReadAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserAvatar> ReadAsync(User user, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return await AvatarDbContext.Avatars.FindAsync(id);
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await AvatarDbContext.UserAvatar.FindAsync(user.Id);
         }
 
-        public async Task<bool> UpdateAsync(Avatar avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateAsync(UserAvatar userAvatar, User owner, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            if (avatar == null) throw new ArgumentNullException(nameof(avatar));
+            if (userAvatar == null) throw new ArgumentNullException(nameof(userAvatar));
 
-            AvatarDbContext.Update(avatar);
+            AvatarDbContext.Update(userAvatar);
             await AvatarDbContext.SaveChangesAsync(cancellationToken);
 
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Avatar avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(UserAvatar userAvatar, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            if (avatar == null) throw new ArgumentNullException(nameof(avatar));
+            if (userAvatar == null) throw new ArgumentNullException(nameof(userAvatar));
 
-            AvatarDbContext.Remove(avatar);
+            AvatarDbContext.UserAvatar.Remove(userAvatar);
             await AvatarDbContext.SaveChangesAsync(cancellationToken);
 
             return true;
@@ -81,5 +86,7 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
             }
         }
         private bool _disposed;
+
+
     }
 }

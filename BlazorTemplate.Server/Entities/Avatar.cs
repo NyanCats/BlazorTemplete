@@ -11,9 +11,7 @@ namespace BlazorTemplate.Server.Entities
     public class Avatar
     {
         [Key, Required]
-        public Guid AvatarId { get; set; }
-        [Required]
-        public Guid OwnerId { get; set; }
+        public Guid Id { get; set; }
 
         public byte[] Image { get; set; }
 

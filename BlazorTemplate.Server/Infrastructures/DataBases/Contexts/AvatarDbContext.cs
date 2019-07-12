@@ -10,13 +10,13 @@ namespace BlazorTemplate.Server.Infrastructures.DataBases.Contexts
 {
     public class AvatarDbContext : DbContext
     {
+        public DbSet<UserAvatar> UserAvatar { get; set; }
         public DbSet<Avatar> Avatars { get; set; }
 
         public AvatarDbContext(DbContextOptions<AvatarDbContext> options) : base(options)
         {
 
         }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

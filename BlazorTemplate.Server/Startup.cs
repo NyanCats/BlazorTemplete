@@ -240,8 +240,9 @@ namespace BlazorTemplate.Server
 
             Services.AddSingleton<SpamBlockSharedService>();
 
-            Services.AddScoped<AvatarStore<Guid>>();
-            
+            Services.AddScoped<AvatarStore>();
+            Services.AddScoped<UserAvatarStore>();
+
             //Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
             //Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();
         }

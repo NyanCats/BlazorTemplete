@@ -75,7 +75,7 @@ namespace BlazorTemplate.Server.Controllers
         [HttpGet]
         [Authorize]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Read()
+        public async Task<IActionResult> GetUserInfomation()
         {
             var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();
