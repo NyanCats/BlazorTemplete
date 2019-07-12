@@ -16,6 +16,7 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
     {
         public AvatarDbContext AvatarDbContext { get; private set; }
 
+        // TODO: Review database structure.
         public AvatarStore(AvatarDbContext avatarDbContext)
         {
             AvatarDbContext = avatarDbContext;
@@ -34,20 +35,15 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Avatar avatar, CancellationToken cancellationToken = default)
+        public async Task<Avatar> ReadByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            if (avatar == null) throw new ArgumentNullException(nameof(avatar));
-
-            AvatarDbContext.Remove(avatar);
-            await AvatarDbContext.SaveChangesAsync(cancellationToken);
-
-            return true;
+            return await AvatarDbContext.Avatars.FindAsync(id);
         }
 
-        public async Task<Avatar> FindByOwnerAsync(User owner, CancellationToken cancellationToken = default)
+        public async Task<Avatar> ReadByOwnerAsync(User owner, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -63,10 +59,23 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
 
             if (avatar == null) throw new ArgumentNullException(nameof(avatar));
 
-            var existingAvatar = await FindByOwnerAsync(owner, cancellationToken);
+            var existingAvatar = await ReadByOwnerAsync(owner, cancellationToken);
             if(existingAvatar == null) return false;
 
             AvatarDbContext.Update(avatar);
+            await AvatarDbContext.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(Avatar avatar, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfDisposed();
+
+            if (avatar == null) throw new ArgumentNullException(nameof(avatar));
+
+            AvatarDbContext.Remove(avatar);
             await AvatarDbContext.SaveChangesAsync(cancellationToken);
 
             return true;
@@ -76,7 +85,6 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
         {
             _disposed = true;
         }
-
         protected void ThrowIfDisposed()
         {
             if (_disposed)
@@ -84,7 +92,6 @@ namespace BlazorTemplate.Server.Infrastructures.Stores
                 throw new ObjectDisposedException(GetType().Name);
             }
         }
-
         private bool _disposed;
     }
 }

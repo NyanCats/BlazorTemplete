@@ -18,7 +18,8 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<bool> CreateAsync(User owner, CancellationToken cancellationToken = default)
         {
-            if (ExistsAsync(owner, cancellationToken).Result) return false;
+            var avatar = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
+            if (avatar != null) return false;
 
             var newAvatar = new Avatar()
             {
@@ -35,7 +36,7 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<bool> UpdateAsync(User owner, byte[] image, CancellationToken cancellationToken = default)
         {
-            var avatar = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
+            var avatar = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
             if (avatar == null) return false;
 
             avatar.Image = image;
@@ -47,23 +48,23 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<byte[]> GetImageAsync(User owner, CancellationToken cancellationToken = default)
         {
-            var result = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
-
+            var result = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
             if (result == null) return null;
+
             return result.Image;
         }
 
         public async Task<bool> ExistsAsync(User owner, CancellationToken cancellationToken = default)
         {
-            var result = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
-            
+            var result = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
             if(result == null) return false;
+
             return true;
         }
 
         public async Task<bool> DeleteAsync(User owner, CancellationToken cancellationToken = default)
         {
-            var avatar = await AvatarStore.FindByOwnerAsync(owner, cancellationToken);
+            var avatar = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
             if (avatar == null) return false;
 
             var result = await AvatarStore.DeleteAsync(avatar, cancellationToken);
