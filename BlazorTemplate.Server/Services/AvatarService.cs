@@ -33,19 +33,6 @@ namespace BlazorTemplate.Server.Services
             return result;
         }
 
-
-        public async Task<bool> UpdateAsync(User owner, byte[] image, CancellationToken cancellationToken = default)
-        {
-            var avatar = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
-            if (avatar == null) return false;
-
-            avatar.Image = image;
-            avatar.LastUpdated = DateTime.Now;
-
-            var result = await AvatarStore.UpdateAsync(avatar, owner, cancellationToken);
-            return result;
-        }
-
         public async Task<byte[]> GetImageAsync(User owner, CancellationToken cancellationToken = default)
         {
             var result = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
@@ -57,9 +44,21 @@ namespace BlazorTemplate.Server.Services
         public async Task<bool> ExistsAsync(User owner, CancellationToken cancellationToken = default)
         {
             var result = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
-            if(result == null) return false;
+            if (result == null) return false;
 
             return true;
+        }
+
+        public async Task<bool> UpdateAsync(User owner, byte[] image, CancellationToken cancellationToken = default)
+        {
+            var avatar = await AvatarStore.ReadByOwnerAsync(owner, cancellationToken);
+            if (avatar == null) return false;
+
+            avatar.Image = image;
+            avatar.LastUpdated = DateTime.Now;
+
+            var result = await AvatarStore.UpdateAsync(avatar, owner, cancellationToken);
+            return result;
         }
 
         public async Task<bool> DeleteAsync(User owner, CancellationToken cancellationToken = default)
