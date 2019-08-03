@@ -17,7 +17,7 @@ namespace BlazorTemplate.Server.Services
             UserAvatarStore = userAvatarStore;
             AvatarStore = avatarStore;
         }
-
+        
         public async Task<bool> CreateAsync(User owner, CancellationToken cancellationToken = default)
         {
             var userAvatar = await UserAvatarStore.ReadAsync(owner, cancellationToken);
