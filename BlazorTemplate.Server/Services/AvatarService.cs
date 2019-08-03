@@ -12,7 +12,8 @@ namespace BlazorTemplate.Server.Services
         UserAvatarStore UserAvatarStore { get; set; }
         AvatarStore AvatarStore { get; set; }
 
-        public AvatarService(UserAvatarStore userAvatarStore, AvatarStore avatarStore)
+        public AvatarService( [FromServices] UserAvatarStore userAvatarStore,
+                              [FromServices] AvatarStore avatarStore )
         {
             UserAvatarStore = userAvatarStore;
             AvatarStore = avatarStore;
