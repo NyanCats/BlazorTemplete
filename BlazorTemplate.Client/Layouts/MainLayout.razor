@@ -1,5 +1,7 @@
-﻿@using Sotsera.Blazor.Toaster
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+
+@using Sotsera.Blazor.Toaster
+@using BlazorTemplate.Client.Components
 
 @inject HttpClient Http
 @inject SessionService SessionService
@@ -31,7 +33,7 @@
     [Inject]
     protected IToaster Toaster { get; set; }
 
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         var result = await SessionService.ValidateCookie(Http);
 

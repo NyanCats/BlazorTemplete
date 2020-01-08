@@ -3,28 +3,26 @@
 @using Blazor.FileReader;
 
 @inject HttpClient Http
-@inject IUriHelper UriHelper
 @inject SessionService SessionService
 @inject AccountService AccountService
 @inject AvatarService AvatarService
 @inject IFileReaderService FileReaderService
-
 <!--<img src="@AvatarService.MyAvatar" />-->
 <input type="file" @ref="@inputTypeFileElement" />
 <button @onclick="@ReadFile">アバターの変更</button>
 
 @functions
 {
-    ElementRef inputTypeFileElement;
+    ElementReference inputTypeFileElement;
 
 
     [Inject]
     protected IToaster Toaster { get; set; }
 
-    protected override Task OnInitAsync()
+    protected override Task OnInitializedAsync()
     {
         AvatarService.AvatarChanged += OnAvatarChanged;
-        return base.OnInitAsync();
+        return base.OnInitializedAsync();
     }
 
     protected void OnAvatarChanged(object sender, string avatar)

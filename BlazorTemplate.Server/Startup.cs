@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Linq;
 using System.Net.Mime;
@@ -47,6 +45,8 @@ namespace BlazorTemplate.Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -63,7 +63,7 @@ namespace BlazorTemplate.Server
 
             //app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseResponseCompression();
+
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -73,7 +73,6 @@ namespace BlazorTemplate.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapBlazorHub();
                 endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
             });
 
@@ -89,8 +88,7 @@ namespace BlazorTemplate.Server
             {
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
                 {
-                    MediaTypeNames.Application.Octet,
-                    WasmMediaTypeNames.Application.Wasm,
+                    MediaTypeNames.Application.Octet
                 });
             });
             
@@ -120,7 +118,7 @@ namespace BlazorTemplate.Server
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
 
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 10;
                 options.Lockout.AllowedForNewUsers = true;
 

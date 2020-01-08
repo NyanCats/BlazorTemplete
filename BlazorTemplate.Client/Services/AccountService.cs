@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-
 using BlazorTemplate.Shared.WebApis.Accounts;
 
 namespace BlazorTemplate.Client.Services
@@ -34,10 +33,11 @@ namespace BlazorTemplate.Client.Services
         public async Task<CreateUserResult> Create(HttpClient http, CreateUserRequest request)
         {
             // await AddCsrfToken(http, JSRuntime);
-
+            
             CreateUserResult result;
             try
             {
+                //result = await http.PostJsonAsync<CreateUserResult>("account", request);
                 result = await http.PostJsonAsync<CreateUserResult>("account", request);
             }
             catch

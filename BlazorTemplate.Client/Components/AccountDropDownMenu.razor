@@ -1,8 +1,8 @@
 ﻿@inject HttpClient Http
-@inject IUriHelper UriHelper
 @inject SessionService SessionService
 @inject AccountService AccountService
 @inject AvatarService AvatarService
+@inject NavigationManager NavigationManager
 @implements IDisposable
 @using Sotsera.Blazor.Toaster
 
@@ -18,7 +18,7 @@
                     <h5>@UserName</h5>
                 </div>
 
-                <a class="dropdown-item" onclick=@LogoutAccount>
+                <a class="dropdown-item" onclick=@LogoutAccount()>
                     <i class="icon-logout"></i> ログアウト
                 </a>
 
@@ -51,14 +51,18 @@ else
         await AccountService.GetUserInfomation(Http);
         await AvatarService.GetMyAvatar(Http);
         Toaster.Success("ログアウトしました。");
-        UriHelper.NavigateTo("/");
+
+        NavigationManager.NavigateTo("/");
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         AccountService.UserInfomationChanged += OnUserInfomationChanged;
         AvatarService.AvatarChanged += OnAvatarChanged;
+
+        base.OnInitialized();
     }
+
 
     protected void OnUserInfomationChanged(object sender, UserInfomationEventArgs e)
     {

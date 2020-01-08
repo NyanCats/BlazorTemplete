@@ -2,7 +2,6 @@
 @using System.IO;
 @using Blazor.FileReader;
 @inject HttpClient Http
-@inject IUriHelper UriHelper
 @inject SessionService SessionService
 @inject AccountService AccountService
 @inject AvatarService AvatarService
@@ -10,18 +9,18 @@
 @implements IDisposable
 
 <style>
-.my-avatar-large {
-    display: inline-block;
-    background-color: #ccc;
-    background-position: center center;
-    background-repeat: no-repeat;
-    margin: 5px;
-    width: 200px;
-    height: 200px;
-    border: 1px solid #ccc;
-    background-size: cover;
-    border-radius: 50px;
-}
+    .my-avatar-large {
+        display: inline-block;
+        background-color: #ccc;
+        background-position: center center;
+        background-repeat: no-repeat;
+        margin: 5px;
+        width: 200px;
+        height: 200px;
+        border: 1px solid #ccc;
+        background-size: cover;
+        border-radius: 50px;
+    }
 </style>
 
 <div class="avatar-container">
@@ -33,15 +32,15 @@
 {
     string AvatarImage { get; set; }
 
-    protected override Task OnInitAsync()
+    protected override Task OnInitializedAsync()
     {
         AvatarService.AvatarChanged += OnAvatarChanged;
 
-        if(!string.IsNullOrEmpty(AvatarService.MyAvatar))
+        if (!string.IsNullOrEmpty(AvatarService.MyAvatar))
         {
             AvatarImage = AvatarService.MyAvatar;
         }
-        return base.OnInitAsync();
+        return base.OnInitializedAsync();
     }
 
     protected void OnAvatarChanged(object sender, string avatar)

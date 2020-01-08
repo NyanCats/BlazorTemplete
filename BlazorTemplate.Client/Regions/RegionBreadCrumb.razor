@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components.Routing
 
 @implements IDisposable
-@inject IUriHelper UriHelper
+@inject NavigationManager NavigationManager
 
 <nav aria-label="breadcrumb" role="navigation">
     <ol class="breadcrumb">
@@ -32,12 +32,12 @@
 {
     List<string> Locations = new List<string>();
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
-        UriHelper.OnLocationChanged += OnLocationChanges<LocationChangedEventArgs>;
+        NavigationManager.LocationChanged += OnLocationChanges<LocationChangedEventArgs>;
         //OnLocationChanges(null, UriHelper.GetAbsoluteUri());
     }
-    
+
     private void OnLocationChanges<LocationChangedEventArgs>(object sender, LocationChangedEventArgs e)
     {
         /*
@@ -50,11 +50,11 @@
         }
         */
         StateHasChanged();
-        
+
     }
-    
+
     public void Dispose()
     {
-        UriHelper.OnLocationChanged -= OnLocationChanges;
+        NavigationManager.LocationChanged -= OnLocationChanges;
     }
 }

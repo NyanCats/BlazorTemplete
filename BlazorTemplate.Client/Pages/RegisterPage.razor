@@ -9,7 +9,7 @@
 @layout MainLayout
 
 @inject HttpClient Http
-@inject IUriHelper UriHelper
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AccountService AccountService
 @inject SessionService SessionService
@@ -101,7 +101,7 @@
                         <input class="form-control" id="#copyTarget_UserName" type="text" value="@CreateUserRequest.UserName" readonly="" />
 
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" onclick="@Click_CopyUserName">
+                            <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" @onclick="Click_CopyUserName">
                                 <i class="icon-note"></i>
                             </button>
                         </div>
@@ -117,7 +117,7 @@
                         </div>
                         <input class="form-control" id="#copyTarget_Password" type="text" value="@CreateUserResult.Password" readonly="">
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" onclick="@Click_CopyPassword">
+                            <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" @onclick="Click_CopyPassword">
                                 <i class="icon-note"></i>
                             </button>
                         </div>
@@ -126,7 +126,7 @@
                 <div class="alert alert-info" role="alert">ユーザー名とパスワードは大切に保管してください。</div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="@Click_RegisterModalOk">OK</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" @onclick="Click_RegisterModalOk">OK</button>
             </div>
         </div>
     </div>
@@ -134,10 +134,7 @@
 
 @functions
 {
-    [Parameter]
     CreateUserRequest CreateUserRequest { get; set; } = new CreateUserRequest();
-
-    [Parameter]
     CreateUserResult CreateUserResult { get; set; } = new CreateUserResult();
 
     [Inject]
@@ -149,10 +146,10 @@
 
         result = await AccountService.Create(Http, CreateUserRequest);
 
-        if(result == null)
+        if (result == null)
         {
             Toaster.Warning("新規登録に失敗しました。");
-            UriHelper.NavigateTo("/");
+            NavigationManager.NavigateTo("/");
             return;
         }
 
@@ -161,15 +158,15 @@
 
         StateHasChanged();
     }
-
-    protected override async Task OnAfterRenderAsync()
+     
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JSRuntime.InvokeAsync<bool>("reloadPopper");
     }
 
     protected void Click_RegisterModalOk()
     {
-        UriHelper.NavigateTo("/login");
+        NavigationManager.NavigateTo("/login");
     }
 
     void Click_CopyUserName()

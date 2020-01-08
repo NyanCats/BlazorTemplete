@@ -6,7 +6,7 @@
 @using Sotsera.Blazor.Toaster
 
 @inject HttpClient Http
-@inject WebAssemblyUriHelper UriHelper
+@inject NavigationManager NavigationManager
 @inject AccountService AccountService
 @inject SessionService SessionService
 @inject AvatarService AvatarService
@@ -72,9 +72,9 @@
     [Inject]
     protected IToaster Toaster { get; set; }
 
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
-        await base.OnInitAsync();
+        await base.OnInitializedAsync();
 
         var result = await SessionService.ValidateCookie(Http);
 
@@ -97,14 +97,14 @@
             await AccountService.GetUserInfomation(Http);
             var avatarResult = await AvatarService.GetMyAvatar(Http);
 
-            if(!avatarResult)
+            if (!avatarResult)
             {
                 await AvatarService.Create(Http);
                 await AvatarService.GetMyAvatar(Http);
             }
 
             Toaster.Success("ログインしました。");
-            UriHelper.NavigateTo("/");
+            NavigationManager.NavigateTo("/");
         }
         else
         {
