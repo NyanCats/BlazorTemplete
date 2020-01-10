@@ -39,7 +39,6 @@ namespace BlazorTemplate.Server.Controllers
         public async Task<IActionResult> Create( [FromBody]CreateUserRequest request) 
         {
             if(SessionService.ValidateCookieAsync(HttpContext).Result) return BadRequest();
-            if (!ModelState.IsValid) return BadRequest();
 
             /*
             // リモートIPの取得

@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    public class CreateUserResult
+    public class CreateAccountResult
     {
         public string Password { get; set; } = "";
 
-        public CreateUserResult(){ }
+        public CreateAccountResult(){ }
 
-        public CreateUserResult(string password)
+        public CreateAccountResult(string password)
         {
             Password = password;
         }

@@ -3,8 +3,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
@@ -15,18 +20,39 @@ namespace BlazorTemplate.Server.Services
         UserManager<User> UserManager { get; set; }
         SignInManager<User> SignInManager { get; set; }
 
+        IConfiguration Configuration { get; set; }
+
         public SessionService(  [FromServices] UserManager<User> userManager,
-                                [FromServices] SignInManager<User> signInManager)
+                                [FromServices] SignInManager<User> signInManager,
+                                [FromServices] IConfiguration configuration)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            Configuration = configuration;
         }
 
-        public async Task<SignInResult> LoginAsync(string name, string password)
+        public async Task<(SignInResult, JwtSecurityToken)> LoginAsync(string name, string password)
         {
             var result = await SignInManager.PasswordSignInAsync(name, password, true, true);
-            
-            return result;
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, name)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiry = DateTime.Now.AddDays(Convert.ToInt32(Configuration["JwtExpiryInDays"]));
+
+            var token = new JwtSecurityToken(
+                Configuration["JwtIssuer"],
+                Configuration["JwtAudience"],
+                claims,
+                expires: expiry,
+                signingCredentials: creds
+            );
+
+            return (result, token);
         }
 
         public async Task LogoutAsync()
@@ -34,10 +60,10 @@ namespace BlazorTemplate.Server.Services
             await SignInManager.SignOutAsync();
         }
 
-        public async Task<bool> ValidateCookieAsync(HttpContext context)
+        public async Task<bool> ValidateTokenAsync(string token)
         {
-            var authResult = await context.AuthenticateAsync();
-            return authResult.Succeeded;
+            // TODO
+            return true;
         }
     }
 }

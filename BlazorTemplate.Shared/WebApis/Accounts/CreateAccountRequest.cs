@@ -3,11 +3,11 @@ using System.Text.RegularExpressions;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    public class CreateUserRequest
+    public class CreateAccountRequest
     {
         [Display(Name = "同意")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "利用規約への同意が必要です。")]
-        [CustomValidation(typeof(CreateUserRequest), "Validate_Agreed001")]
+        [CustomValidation(typeof(CreateAccountRequest), "Validate_Agreed001")]
         public bool Agreed { get; set; } = false;
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
         /// </summary>
         public static ValidationResult Validate_Agreed001(string value, ValidationContext context)
         {
-            var model = (CreateUserRequest)context.ObjectInstance;
+            var model = (CreateAccountRequest)context.ObjectInstance;
             if (!model.Agreed) return new ValidationResult("利用規約への同意が必要です。");
             return ValidationResult.Success;
         }
@@ -24,7 +24,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
         [Required]
         [MinLength(4, ErrorMessage = "{0}は{1}文字以上必要です。")]
         [MaxLength(16)]
-        [CustomValidation(typeof(CreateUserRequest), "Validate_Name001")]
+        [CustomValidation(typeof(CreateAccountRequest), "Validate_Name001")]
         [DataType(DataType.Text)]
         public string UserName { get; set; } = "";
 
@@ -33,7 +33,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
         /// </summary>
         public static ValidationResult Validate_Name001(string value, ValidationContext context)
         {
-            var model = (CreateUserRequest)context.ObjectInstance;
+            var model = (CreateAccountRequest)context.ObjectInstance;
 
             if (model.UserName == null) return ValidationResult.Success;
 

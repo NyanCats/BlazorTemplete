@@ -19,17 +19,11 @@ using BlazorTemplate.Server.Entities;
 using BlazorTemplate.Server.Properties.SampleProject.Resources;
 using BlazorTemplate.Server.Properties;
 using System.Net;
-using Microsoft.AspNetCore.Components.Server;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Localization;
-using System.Collections.Generic;
-using System.Globalization;
 using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.FileProviders;
-using System.IO;
 using BlazorTemplate.Server.Infrastructures.Stores;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BlazorTemplate.Server
 {
@@ -51,7 +45,6 @@ namespace BlazorTemplate.Server
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBlazorDebugging();
-                //app.UseDatabaseErrorPage();
                 ListAllRegisteredServices(app);
             }
             else
@@ -62,9 +55,12 @@ namespace BlazorTemplate.Server
             }
 
             //app.UseHttpsRedirection();
-            app.UseRouting();
 
             app.UseStaticFiles();
+            app.UseClientSideBlazorFiles<Client.Startup>();
+
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCookiePolicy();
@@ -72,12 +68,12 @@ namespace BlazorTemplate.Server
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
             });
 
             //app.UseMiddleware<CsrfTokenCookieMiddleware>();
-            app.UseClientSideBlazorFiles<Client.Startup>();
+            
         }
         
         public void ConfigureServices(IServiceCollection services)
@@ -91,13 +87,6 @@ namespace BlazorTemplate.Server
                     MediaTypeNames.Application.Octet
                 });
             });
-            
-            /*
-            Services.AddAntiforgery(options =>
-            {
-                options.HeaderName = "X-CSRF-TOKEN";
-            });
-            */
 
             Services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -126,30 +115,21 @@ namespace BlazorTemplate.Server
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
             });
 
-
-            Services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => context?.User?.Identity?.IsAuthenticated != true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-            Services
-                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    // 認証されていないユーザーがリソースにアクセスしようとしたとき
-                    options.LoginPath = $"/";
-
-                    options.LogoutPath = $"/";
-
-                    // アクセスが禁止されているリソースにアクセスしようとしたとき
-                    options.AccessDeniedPath = $"/";
-
-                    // クッキーの有効期限
-                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["JwtIssuer"],
+                        ValidAudience = Configuration["JwtAudience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
+                    };
                 });
 
-            
             Services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -165,60 +145,6 @@ namespace BlazorTemplate.Server
                     .AddErrorDescriber<IdentityErrorDescriberJapanese>();
                     //.AddDefaultTokenProviders();
 
-            Services.ConfigureApplicationCookie(config =>
-            {
-                config.Events = new CookieAuthenticationEvents
-                {
-                    OnRedirectToAccessDenied = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnRedirectToLogout = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnRedirectToReturnUrl = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnSignedIn = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnSigningIn = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnSigningOut = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnValidatePrincipal = ctx =>
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    },
-                    OnRedirectToLogin = ctx => 
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
-                    }
-                };
-                /*
-                configure.ReturnUrlParameter = "";
-                configure.AccessDeniedPath = new PathString("");
-                configure.LoginPath = new PathString("");
-                configure.LogoutPath = new PathString("");
-                configure.ExpireTimeSpan = TimeSpan.FromDays(30);
-                */
-            });
-
             Services
                 .AddMvc(options =>
                 {
@@ -227,10 +153,7 @@ namespace BlazorTemplate.Server
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            //services.AddDbContext<AuthenticationDbContext>(options =>);
-
             //Services.AddRazorPages();
-            //Services.AddServerSideBlazor();
 
             Services.AddScoped<AccountService>();
             Services.AddScoped<SessionService>();
@@ -250,9 +173,9 @@ namespace BlazorTemplate.Server
             app.Map("/allservices", builder => builder.Run(async context =>
             {
                 var sb = new StringBuilder();
-                sb.Append("<h1>全てのサービス</h1>");
+                sb.Append("<h1>All Services</h1>");
                 sb.Append("<table><thead>");
-                sb.Append("<tr><th>タイプ名</th><th>ライフタイム</th><th>インスタンス</th></tr>");
+                sb.Append("<tr><th>Type Name</th><th>Lifetime</th><th>Instance</th></tr>");
                 sb.Append("</thead><tbody>");
                 foreach (var svc in Services.OrderBy(key => key.ServiceType.FullName))
                 {

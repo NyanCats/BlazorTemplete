@@ -1,5 +1,4 @@
-﻿@inject HttpClient Http
-@inject SessionService SessionService
+﻿@inject SessionService SessionService
 @inject AccountService AccountService
 @inject AvatarService AvatarService
 @inject NavigationManager NavigationManager
@@ -47,9 +46,9 @@ else
 
     async Task LogoutAccount()
     {
-        await SessionService.Logout(Http);
-        await AccountService.GetUserInfomation(Http);
-        await AvatarService.GetMyAvatar(Http);
+        await SessionService.LogoutAsync();
+        await AccountService.GetUserInfomation();
+        await AvatarService.GetMyAvatarAsync();
         Toaster.Success("ログアウトしました。");
 
         NavigationManager.NavigateTo("/");
@@ -57,17 +56,16 @@ else
 
     protected override void OnInitialized()
     {
-        AccountService.UserInfomationChanged += OnUserInfomationChanged;
+        AccountService.UserNameChanged += OnUserNameChanged;
         AvatarService.AvatarChanged += OnAvatarChanged;
 
         base.OnInitialized();
     }
 
 
-    protected void OnUserInfomationChanged(object sender, UserInfomationEventArgs e)
+    protected void OnUserNameChanged(object sender, string username)
     {
-        IsLogin = e.IsValid;
-        UserName = e.UserName;
+        UserName = username;
         StateHasChanged();
     }
 
@@ -79,7 +77,7 @@ else
 
     public void Dispose()
     {
-        AccountService.UserInfomationChanged -= OnUserInfomationChanged;
+        AccountService.UserNameChanged -= OnUserNameChanged;
         AvatarService.AvatarChanged -= OnAvatarChanged;
     }
 }

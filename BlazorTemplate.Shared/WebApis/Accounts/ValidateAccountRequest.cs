@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    public class ValidateRequest
+    public class ValidateAccountRequest
     {
         // TODO: write validations
         [Required]
@@ -12,7 +12,7 @@ namespace BlazorTemplate.Shared.WebApis.Accounts
         [Required]
         public string Password { get; protected set; }
 
-        public ValidateRequest(string userName, string password)
+        public ValidateAccountRequest(string userName, string password)
         {
             UserName = userName;
             Password = password;

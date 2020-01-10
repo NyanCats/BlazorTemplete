@@ -132,19 +132,19 @@
     </div>
 </div>
 
-@functions
+@code
 {
-    CreateUserRequest CreateUserRequest { get; set; } = new CreateUserRequest();
-    CreateUserResult CreateUserResult { get; set; } = new CreateUserResult();
+    CreateAccountRequest CreateAccountRequest { get; set; } = new CreateAccountRequest();
+    CreateAccountResult CreateAccountResult { get; set; } = new CreateAccountResult();
 
     [Inject]
     protected IToaster Toaster { get; set; }
 
     async Task RegisterAccount()
     {
-        CreateUserResult result;
+        CreateAccountResult result;
 
-        result = await AccountService.Create(Http, CreateUserRequest);
+        result = await AccountService.Create(Http, CreateAccountRequest);
 
         if (result == null)
         {

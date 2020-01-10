@@ -7,54 +7,73 @@ using Microsoft.JSInterop;
 
 using BlazorTemplate.Shared.WebApis.Sessions;
 using System;
+using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
+using System.Text.Json;
+using System.Text;
+using System.Net.Http.Headers;
 
 namespace BlazorTemplate.Client.Services
 {
-    public class SessionService : ClientServiceBase
+    public delegate void SessionEventHandler(SessionService sender);
+
+    public class SessionService : NetworkServiceBase
     {
-        private IJSRuntime JSRuntime { get; set; }
+        public event SessionEventHandler LoggedIn;
+        public event SessionEventHandler LoggedOut;
 
+        protected virtual void OnLoggedIn(SessionService sender) => LoggedIn?.Invoke(this);
+        protected virtual void OnLoggedOut(SessionService sender) => LoggedOut?.Invoke(this);
 
-        public SessionService(IJSRuntime jsRuntime)
+        public override string EndPointUri => "session";
+        HttpClient HttpClient { get; set; }
+        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        ILocalStorageService LocalStorage { get; set; }
+
+        public SessionService(  HttpClient httpClient,
+                                AuthenticationStateProvider authenticationStateProvider,
+                                ILocalStorageService localStorage)
         {
-            JSRuntime = jsRuntime;
+            HttpClient = httpClient;
+            AuthenticationStateProvider = authenticationStateProvider;
+            LocalStorage = localStorage;
         }
 
-        public async Task<bool> Login(HttpClient http, LoginRequest request)
+        public async Task<bool> LoginAsync(LoginRequest request)
         {
-            // await AddCsrfToken(http);
+            var loginAsJson = JsonSerializer.Serialize(request);
+            var response = await HttpClient.PostAsync(EndPointUri, new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
 
-            try
-            {
-                await http.PostJsonAsync("session", request);
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+            if (!response.IsSuccessStatusCode) return false;
+
+            var loginResult = JsonSerializer.Deserialize<LoginResult>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            await LocalStorage.SetItemAsync("authToken", loginResult.Token);
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
+
+            (AuthenticationStateProvider as ApiAuthenticationStateProvider).MarkUserAsAuthenticated(request.UserName);
+            OnLoggedIn(this);
+
+            return true;
         }
 
-        public async Task<bool> Logout(HttpClient http)
+        public async Task LogoutAsync()
         {
-            // await AddCsrfToken(http);
-            var response = await http.DeleteAsync("session");
-            switch(response.StatusCode)
-            {
-                case HttpStatusCode.OK  :   return true;
-                default                 :   return false;
-            }
+            await LocalStorage.RemoveItemAsync("authToken");
+            HttpClient.DefaultRequestHeaders.Authorization = null;
+
+            (AuthenticationStateProvider as ApiAuthenticationStateProvider).MarkUserAsLoggedOut();
+            OnLoggedOut(this);
         }
 
-        public async Task<bool> ValidateCookie(HttpClient http)
+        public async Task<bool> ValidateAsync()
         {
-            // await AddCsrfToken(http);
-            var response =  await http.GetAsync("session");
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.OK  : return true;
-                default                 : return false;
-            }
+            var response =  await HttpClient.GetAsync(EndPointUri);
+            if (response.IsSuccessStatusCode) return true;
+
+            await LogoutAsync();
+
+            return false;
         }
     }
 }

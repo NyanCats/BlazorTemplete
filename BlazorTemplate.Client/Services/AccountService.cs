@@ -3,42 +3,43 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using BlazorTemplate.Shared.WebApis.Accounts;
+using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
 
 namespace BlazorTemplate.Client.Services
 {
-    public delegate void UserInfomationEventHandler(object sender, UserInfomationEventArgs e);
+    public delegate void UserNameEventHandler(AccountService sender, string username);
 
-    public class AccountService : ClientServiceBase
+    public class AccountService
     {
-        public event UserInfomationEventHandler UserInfomationChanged;
+        public event UserNameEventHandler UserNameChanged;
 
-        private IJSRuntime JSRuntime { get; set; }
+        HttpClient HttpClient { get; set; }
+        //AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        ILocalStorageService LocalStorage { get; set; }
 
-        public AccountService(IJSRuntime jsRuntime)
+        public AccountService(  HttpClient httpClient,
+                                AuthenticationStateProvider authenticationStateProvider,
+                                ILocalStorageService localStorage)
         {
-            JSRuntime = jsRuntime;
+            HttpClient = httpClient;
+            //AuthenticationStateProvider = authenticationStateProvider;
+            LocalStorage = localStorage;
         }
 
 
 
-        protected virtual void OnUserInfomationChanged(object sender, UserInfomationEventArgs e)
+        protected virtual void OnUserNameChanged(AccountService sender, string username) => UserNameChanged?.Invoke(this, username);
+
+
+
+        public async Task<CreateAccountResult> Create(CreateAccountRequest request)
         {
-            UserInfomationChanged?.Invoke(this, e);
-        }
-
-
-
-        public async Task<CreateUserResult> Create(HttpClient http, CreateUserRequest request)
-        {
-            // await AddCsrfToken(http, JSRuntime);
-            
-            CreateUserResult result;
+            CreateAccountResult result;
             try
             {
-                //result = await http.PostJsonAsync<CreateUserResult>("account", request);
-                result = await http.PostJsonAsync<CreateUserResult>("account", request);
+                result = await HttpClient.PostJsonAsync<CreateAccountResult>("account", request);
             }
             catch
             {
@@ -47,47 +48,31 @@ namespace BlazorTemplate.Client.Services
             return result;
         }
 
-        public async Task<bool> Delete(HttpClient http)
+        public async Task<bool> Delete()
         {
-            // await AddCsrfToken(http, JSRuntime);
-            var response = await http.DeleteAsync("account");
+            var response = await HttpClient.DeleteAsync("account");
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> Validate(HttpClient http, ValidateRequest request)
+        public async Task<bool> Validate(ValidateAccountRequest request)
         {
-            // await AddCsrfToken(http, JSRuntime);
-            var response = await http.PutJsonAsync<HttpResponseMessage>("account", request);
-
+            var response = await HttpClient.PutJsonAsync<HttpResponseMessage>("account", request);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<UserInfomationResult> GetUserInfomation(HttpClient http)
+        public async Task<UserInfomationResult> GetUserInfomation()
         {
-            // await AddCsrfToken(http, JSRuntime);
             try
             {
-                var response = await http.GetJsonAsync<UserInfomationResult>("account");
-                OnUserInfomationChanged(this, new UserInfomationEventArgs(true, response.UserName));
+                var response = await HttpClient.GetJsonAsync<UserInfomationResult>("account");
+                OnUserNameChanged(this, response.UserName);
                 return response;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                OnUserInfomationChanged(this, new UserInfomationEventArgs(false, string.Empty));
+                OnUserNameChanged(this,  string.Empty);
                 return null;
             }
-        }
-    }
-
-    public class UserInfomationEventArgs
-    {
-        public bool IsValid { get; protected set; }
-        public string UserName { get; protected set; }
-
-        public UserInfomationEventArgs(bool isValid, string userName)
-        {
-            IsValid = isValid;
-            UserName = userName;
         }
     }
 }
