@@ -31,7 +31,7 @@ namespace BlazorTemplate.Server.Services
             Configuration = configuration;
         }
 
-        public async Task<(SignInResult, JwtSecurityToken)> LoginAsync(string name, string password)
+        public async Task<(SignInResult, string)> LoginAsync(string name, string password)
         {
             var result = await SignInManager.PasswordSignInAsync(name, password, true, true);
 
@@ -51,8 +51,8 @@ namespace BlazorTemplate.Server.Services
                 expires: expiry,
                 signingCredentials: creds
             );
-
-            return (result, token);
+            
+            return (result, new JwtSecurityTokenHandler().WriteToken(token));
         }
 
         public async Task LogoutAsync()
@@ -62,7 +62,10 @@ namespace BlazorTemplate.Server.Services
 
         public async Task<bool> ValidateTokenAsync(string token)
         {
-            // TODO
+            //var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            
+
+
             return true;
         }
     }

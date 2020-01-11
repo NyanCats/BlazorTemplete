@@ -47,7 +47,7 @@ else
     async Task LogoutAccount()
     {
         await SessionService.LogoutAsync();
-        await AccountService.GetUserInfomation();
+        await AccountService.GetUserInfomationAsync();
         await AvatarService.GetMyAvatarAsync();
         Toaster.Success("ログアウトしました。");
 

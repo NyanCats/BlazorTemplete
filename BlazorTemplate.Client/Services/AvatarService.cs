@@ -20,6 +20,8 @@ namespace BlazorTemplate.Client.Services
 
         public override string EndPointUri => "avatar";
         HttpClient HttpClient { get; set; }
+        public string MyAvatar { get; protected set; } = string.Empty;
+
         public AvatarService(HttpClient httpClient)
         {
             HttpClient = httpClient;
@@ -62,20 +64,16 @@ namespace BlazorTemplate.Client.Services
         
         public async Task<bool> GetMyAvatarAsync()
         {
-            string myAvatar = string.Empty;
-
             var response = await HttpClient.GetAsync(EndPointUri);
-            if (!response.IsSuccessStatusCode)
-            {
-                OnAvatarChanged(this, myAvatar);
-                return false;
-            }
+            if (!response.IsSuccessStatusCode) return false;
+
             var data = await response.Content.ReadAsByteArrayAsync();
+
             // TODO:
             var type = "image/png";
-            myAvatar = $"data:{type};base64,{Convert.ToBase64String(data)}";
+            MyAvatar = $"data:{type};base64,{Convert.ToBase64String(data)}";
 
-            OnAvatarChanged(this, myAvatar);
+            OnAvatarChanged(this, MyAvatar);
             return true;
         }
     }

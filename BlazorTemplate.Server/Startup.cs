@@ -24,6 +24,8 @@ using BlazorTemplate.Server.Infrastructures.DataBases.Contexts;
 using Microsoft.EntityFrameworkCore;
 using BlazorTemplate.Server.Infrastructures.Stores;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BlazorTemplate.Server
 {
@@ -63,7 +65,7 @@ namespace BlazorTemplate.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
             //app.UseRequestLocalization();
 
             app.UseEndpoints(endpoints =>
@@ -114,8 +116,15 @@ namespace BlazorTemplate.Server
                 options.User.RequireUniqueEmail = false;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
             });
-
-            Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.LoginPath = "/";
+                options.AccessDeniedPath = "/";
+                options.SlidingExpiration = true;
+            });
+            Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -128,8 +137,16 @@ namespace BlazorTemplate.Server
                         ValidAudience = Configuration["JwtAudience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
                     };
+                    
+                })
+                .AddCookie(options =>
+                {
+                    options.LoginPath = $"/";
+                    options.LogoutPath = $"/";
+                    options.AccessDeniedPath = $"/";
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 });
-
+                
             Services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -139,11 +156,65 @@ namespace BlazorTemplate.Server
                 options.UseSqlServer(Configuration.GetConnectionString("AvatarDbConnection"));
             });
 
-
-            Services.AddIdentity<User, Role>()
+            Services.ConfigureApplicationCookie(config =>
+            {
+                
+                config.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToAccessDenied = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnRedirectToLogout = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnRedirectToReturnUrl = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnSignedIn = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnSigningIn = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnSigningOut = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnValidatePrincipal = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    },
+                    OnRedirectToLogin = ctx =>
+                    {
+                        ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Task.FromResult(0);
+                    }
+                   
+                };
+                /*
+                config.ReturnUrlParameter = string.Empty;
+                config.AccessDeniedPath = string.Empty;
+                config.LoginPath = string.Empty;
+                config.LogoutPath = string.Empty;
+                config.ExpireTimeSpan = TimeSpan.FromDays(30);
+                */
+            });
+                Services.AddIdentity<User, Role>()
                     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
                     .AddErrorDescriber<IdentityErrorDescriberJapanese>();
-                    //.AddDefaultTokenProviders();
+            //.AddDefaultTokenProviders();
 
             Services
                 .AddMvc(options =>
@@ -151,7 +222,12 @@ namespace BlazorTemplate.Server
                     options.ModelMetadataDetailsProviders.Add(new ValidationMetadataProviderJapanese("BlazorTemplate.Server.Properties.ValidationResourceJapanese", typeof(ValidationResourceJapanese)));
                     //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
 
             //Services.AddRazorPages();
 

@@ -1,0 +1,25 @@
+﻿@page "/logout"
+@layout MainLayout
+
+@using Microsoft.AspNetCore.Blazor.Services
+@using BlazorTemplate.Shared.WebApis.Sessions
+@using Sotsera.Blazor.Toaster
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavigationManager
+@inject AccountService AccountService
+@inject SessionService SessionService
+@inject AvatarService AvatarService
+
+<p>ログアウトしました。</p>
+
+@code 
+{
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SessionService.LogoutAsync();
+        await AccountService.GetUserInfomationAsync();
+        await AvatarService.GetMyAvatarAsync();
+    }
+}

@@ -34,7 +34,7 @@ namespace BlazorTemplate.Client.Services
 
 
 
-        public async Task<CreateAccountResult> Create(CreateAccountRequest request)
+        public async Task<CreateAccountResult> CreateAsync(CreateAccountRequest request)
         {
             CreateAccountResult result;
             try
@@ -48,23 +48,23 @@ namespace BlazorTemplate.Client.Services
             return result;
         }
 
-        public async Task<bool> Delete()
+        public async Task<bool> DeleteAsync()
         {
             var response = await HttpClient.DeleteAsync("account");
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> Validate(ValidateAccountRequest request)
+        public async Task<bool> ValidateAsync(ValidateAccountRequest request)
         {
             var response = await HttpClient.PutJsonAsync<HttpResponseMessage>("account", request);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<UserInfomationResult> GetUserInfomation()
+        public async Task<GetUserInfomationResult> GetUserInfomationAsync()
         {
             try
             {
-                var response = await HttpClient.GetJsonAsync<UserInfomationResult>("account");
+                var response = await HttpClient.GetJsonAsync<GetUserInfomationResult>("account");
                 OnUserNameChanged(this, response.UserName);
                 return response;
             }

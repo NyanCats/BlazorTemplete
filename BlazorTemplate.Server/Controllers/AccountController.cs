@@ -36,9 +36,9 @@ namespace BlazorTemplate.Server.Controllers
         [HttpPost]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( [FromBody]CreateUserRequest request) 
+        public async Task<IActionResult> Create( [FromBody]CreateAccountRequest request) 
         {
-            if(SessionService.ValidateCookieAsync(HttpContext).Result) return BadRequest();
+            //if(SessionService.ValidateTokenAsync(HttpContext).Result) return BadRequest();
 
             /*
             // リモートIPの取得
@@ -68,7 +68,7 @@ namespace BlazorTemplate.Server.Controllers
 
             //SpamBlockService.AddOrUpdate(userIp);
 
-            return Ok( new CreateUserResult(password) );
+            return Ok( new CreateAccountResult(password) );
         }
 
         [HttpGet]
@@ -79,7 +79,7 @@ namespace BlazorTemplate.Server.Controllers
             var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();
 
-            return Ok(new UserInfomationResult(user.UserName));
+            return Ok(new GetUserInfomationResult(user.UserName));
         }
 
         // TODO
@@ -98,7 +98,7 @@ namespace BlazorTemplate.Server.Controllers
         [HttpDelete]
         [Authorize]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete()
+        public async Task<IActionResult> DeleteAsync()
         {
             throw new NotImplementedException();
         }

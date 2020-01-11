@@ -46,7 +46,7 @@ namespace BlazorTemplate.Client.Services
 
             if (!response.IsSuccessStatusCode) return false;
 
-            var loginResult = JsonSerializer.Deserialize<LoginResult>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var loginResult = JsonSerializer.Deserialize<LoginResult>(await response.Content.ReadAsStringAsync());
 
             await LocalStorage.SetItemAsync("authToken", loginResult.Token);
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
@@ -62,8 +62,16 @@ namespace BlazorTemplate.Client.Services
             await LocalStorage.RemoveItemAsync("authToken");
             HttpClient.DefaultRequestHeaders.Authorization = null;
 
+            await HttpClient.DeleteAsync(EndPointUri);
+
             (AuthenticationStateProvider as ApiAuthenticationStateProvider).MarkUserAsLoggedOut();
             OnLoggedOut(this);
+        }
+
+        public async Task<bool> VerifyAsync()
+        {
+            var task = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            return task.User.Identity.IsAuthenticated;
         }
 
         public async Task<bool> ValidateAsync()

@@ -4,12 +4,14 @@
 @using Microsoft.AspNetCore.Blazor.Services
 @using BlazorTemplate.Shared.WebApis.Sessions
 @using Sotsera.Blazor.Toaster
+@using Microsoft.AspNetCore.Components.Authorization
 
-@inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject AccountService AccountService
 @inject SessionService SessionService
 @inject AvatarService AvatarService
+
+
 
 <div class="container col-md-8" id="login-page">
     <div class="card">
@@ -63,7 +65,7 @@
     </div>
 </div>
 
-@functions
+@code
 {
     LoginRequest LoginRequest { get; set; } = new LoginRequest();
 
@@ -75,33 +77,20 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        var result = await SessionService.ValidateCookie(Http);
-
-        if (result)
-        {
-            await SessionService.Logout(Http);
-            await AccountService.GetUserInfomation(Http);
-            await AvatarService.GetMyAvatar(Http);
-            Toaster.Info("既にログインしていたため、ログインページではログアウトされます。");
-        }
+        if(await SessionService.VerifyAsync()) NavigationManager.NavigateTo("/");
     }
 
     async Task LoginAccount()
     {
         ButtonDisabled = true;
-        var loginResult = await SessionService.Login(Http, LoginRequest);
+        StateHasChanged();
+
+        var loginResult = await SessionService.LoginAsync(LoginRequest);
 
         if (loginResult)
         {
-            await AccountService.GetUserInfomation(Http);
-            var avatarResult = await AvatarService.GetMyAvatar(Http);
-
-            if (!avatarResult)
-            {
-                await AvatarService.Create(Http);
-                await AvatarService.GetMyAvatar(Http);
-            }
+            await AccountService.GetUserInfomationAsync();
+            await AvatarService.GetMyAvatarAsync();
 
             Toaster.Success("ログインしました。");
             NavigationManager.NavigateTo("/");
@@ -110,6 +99,7 @@
         {
             Toaster.Warning("ログインに失敗しました。");
         }
+
         ButtonDisabled = false;
         StateHasChanged();
     }

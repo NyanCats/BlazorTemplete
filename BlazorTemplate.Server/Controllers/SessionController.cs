@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BlazorTemplate.Server.Controllers
 {
@@ -33,15 +35,15 @@ namespace BlazorTemplate.Server.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login( [FromBody] LoginRequest request)
         {
-            var result = await SessionService.LoginAsync(request.UserName, request.Password);
+            var(result, token) = await SessionService.LoginAsync(request.UserName, request.Password);
 
             if (!result.Succeeded) return BadRequest();
 
-            return Ok();
+            return Ok(new LoginResult() { Token = token });
         }
 
         [HttpDelete]
-        [Authorize]
+        [AllowAnonymous]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
@@ -51,11 +53,10 @@ namespace BlazorTemplate.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ValidateCookie()
+        public async Task<IActionResult> ValidateToken()
         {
-            var result = await SessionService.ValidateCookieAsync(HttpContext);
-            if (!result) return Unauthorized();
-
+            var result = await SessionService.ValidateTokenAsync(HttpContext.Request.Headers["Authorization"]);
+            if (!result) return BadRequest();
             return Ok();
         }
     }

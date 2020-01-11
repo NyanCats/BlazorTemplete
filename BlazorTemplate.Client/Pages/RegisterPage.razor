@@ -21,7 +21,7 @@
             <h3>新規登録</h3>
         </div>
         <div class="card-body">
-            <EditForm Model="@CreateUserRequest" OnValidSubmit="@RegisterAccount">
+            <EditForm Model="@CreateAccountRequest" OnValidSubmit="@RegisterAccount">
                 <p class="text-muted small">サービスを利用するには、ユーザー名と利用規約への同意が必要です。メールアドレスは必要ありません。</p>
                 <div class="form-group">
                     <label for="username">ユーザー名</label>
@@ -35,7 +35,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <InputText id="username" class="form-control" @bind-Value="@CreateUserRequest.UserName" />
+                        <InputText id="username" class="form-control" @bind-Value="@CreateAccountRequest.UserName" />
                     </div>
                     <label class="text-muted small">
                         4文字以上16文字以下の半角英数字及びアンダースコア (_)
@@ -57,7 +57,7 @@
                             </p>
                             <div class="container" style="float:left;height:26px;padding-left: 0px;width: 40px;">
                                 <label class="switch switch-label switch-success">
-                                    <InputCheckbox class="switch-input" @bind-Value="@CreateUserRequest.Agreed" />
+                                    <InputCheckbox class="switch-input" @bind-Value="@CreateAccountRequest.Agreed" />
                                     <span class="switch-slider" data-checked="✓" data-unchecked="✕"></span>
                                 </label>
                             </div>
@@ -98,7 +98,7 @@
                                 <i class="icon-user"></i>
                             </span>
                         </div>
-                        <input class="form-control" id="#copyTarget_UserName" type="text" value="@CreateUserRequest.UserName" readonly="" />
+                        <input class="form-control" id="#copyTarget_UserName" type="text" value="@CreateAccountRequest.UserName" readonly="" />
 
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" @onclick="Click_CopyUserName">
@@ -115,7 +115,7 @@
                                 <i class="icon-key"></i>
                             </span>
                         </div>
-                        <input class="form-control" id="#copyTarget_Password" type="text" value="@CreateUserResult.Password" readonly="">
+                        <input class="form-control" id="#copyTarget_Password" type="text" value="@CreateAccountResult.Password" readonly="">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" @onclick="Click_CopyPassword">
                                 <i class="icon-note"></i>
@@ -144,7 +144,7 @@
     {
         CreateAccountResult result;
 
-        result = await AccountService.Create(Http, CreateAccountRequest);
+        result = await AccountService.CreateAsync(CreateAccountRequest);
 
         if (result == null)
         {
@@ -153,7 +153,7 @@
             return;
         }
 
-        CreateUserResult = result;
+        CreateAccountResult = result;
         await JSRuntime.InvokeAsync<bool>("showRegisterModal");
 
         StateHasChanged();

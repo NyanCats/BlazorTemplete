@@ -2,37 +2,21 @@
 @using System.IO;
 @using Blazor.FileReader;
 
-@inject SessionService SessionService
-@inject AccountService AccountService
 @inject AvatarService AvatarService
 @inject IFileReaderService FileReaderService
-<!--<img src="@AvatarService.MyAvatar" />-->
+
 <input type="file" @ref="@inputTypeFileElement" />
 <button @onclick="@ReadFile">アバターの変更</button>
 
-@functions
+@code
 {
     ElementReference inputTypeFileElement;
-
 
     [Inject]
     protected IToaster Toaster { get; set; }
 
-    protected override Task OnInitializedAsync()
-    {
-        AvatarService.AvatarChanged += OnAvatarChanged;
-        return base.OnInitializedAsync();
-    }
-
-    protected void OnAvatarChanged(object sender, string avatar)
-    {
-        StateHasChanged();
-    }
-
     public async Task ReadFile()
     {
-        
-
         var file = FileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync().Result.FirstOrDefault();
         var fileInfo = await file.ReadFileInfoAsync();
         byte[] buffer = null;
@@ -42,19 +26,19 @@
             buffer = new byte[memoryStream.Length];
             memoryStream.Read(buffer, 0, (int)memoryStream.Length);
         }
-        
 
         if (buffer == null)
         {
             return;
         }
-        var success = await AvatarService.UpdateAsync(buffer, fileInfo);
+        var result = await AvatarService.UpdateAsync(buffer, fileInfo);
 
-        if (!success)
+        if (!result)
         {
             Toaster.Error("アバターの更新に失敗しました。");
             return;
         }
+
         await AvatarService.GetMyAvatarAsync();
         Toaster.Success("アバターが更新されました。");
 

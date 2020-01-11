@@ -4,11 +4,9 @@
 @using BlazorTemplate.Client.Components
 @using Microsoft.AspNetCore.Components.Authorization
 
-@inject HttpClient Http
 @inject SessionService SessionService
 @inject AccountService AccountService
 @inject AvatarService AvatarService
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <RegionHeader />
 
@@ -38,33 +36,25 @@
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
-    protected async Task AutoLoginAsync()
-    {
-        Console.WriteLine("a");
-        // ローカル検証
-        var authState = await AuthenticationStateTask;
-        var user = authState.User;
-        if (!user.Identity.IsAuthenticated) return;
-        Console.WriteLine("[認証] ローカル認証が完了しました。");
-        
-        // リモート検証
-        var result = await SessionService.ValidateCookie(Http);
-        if (!result)
-        {
-            Console.WriteLine("[認証] リモート認証に失敗しました。");
-            return;
-        }
-
-        await AccountService.GetUserInfomation(Http);
-        await AvatarService.GetMyAvatar(Http);
-
-        Toaster.Success("自動ログインしました。");
-    }
-
     protected override async Task OnInitializedAsync()
     {
         await AutoLoginAsync();
+        await base.OnInitializedAsync();
+    }
 
-        StateHasChanged();
+    protected async Task AutoLoginAsync()
+    {
+        // ローカル検証
+        var result = await SessionService.VerifyAsync();
+        if (!result) return;
+
+        // リモート検証
+        result = await SessionService.ValidateAsync();
+        if (!result) return;
+
+        await AccountService.GetUserInfomationAsync();
+        await AvatarService.GetMyAvatarAsync();
+
+        Toaster.Success("自動ログインしました。");
     }
 }
