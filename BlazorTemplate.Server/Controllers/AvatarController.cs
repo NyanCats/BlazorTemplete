@@ -8,6 +8,7 @@ using BlazorTemplate.Server.Services;
 using BlazorTemplate.Server.SharedServices;
 using BlazorTemplate.Shared.WebApis.Avatars;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -31,7 +32,7 @@ namespace BlazorTemplate.Server.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateMyAvatar( [FromBody] CreateAvatarRequest request)
         {

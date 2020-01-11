@@ -68,12 +68,18 @@ namespace BlazorTemplate.Server
             app.UseAuthorization();
             app.UseCookiePolicy();
 
+            app.UseCors(options => options
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
             //app.UseRequestLocalization();
 
             app.UseEndpoints(endPoints =>
             {
                 endPoints.MapControllers();
-                endPoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+                endPoints.MapRazorPages();
+                endPoints.MapFallbackToClientSideBlazor<Client.Startup>("/","index.html");
+                //endPoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
             });
 
             //app.UseMiddleware<CsrfTokenCookieMiddleware>();
@@ -95,9 +101,9 @@ namespace BlazorTemplate.Server
             Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressConsumesConstraintForFormFileParameters = true;
-                options.SuppressInferBindingSourcesForParameters = true;
+                options.SuppressInferBindingSourcesForParameters = false;
                 options.SuppressModelStateInvalidFilter = true;
-                options.SuppressMapClientErrors = false;
+                options.SuppressMapClientErrors = true;
             });
             
             Services.Configure<IdentityOptions>(options =>
@@ -120,6 +126,9 @@ namespace BlazorTemplate.Server
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
             });
 
+            Services.AddCors();
+            Services.AddControllers();
+
             /*
             Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -141,7 +150,7 @@ namespace BlazorTemplate.Server
                */
 
 
-            
+
             Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddCookie(options =>
                     {
@@ -151,26 +160,62 @@ namespace BlazorTemplate.Server
                         options.LogoutPath = new PathString("/logout");
                         options.ExpireTimeSpan = TimeSpan.FromDays(30);
                         options.SlidingExpiration = true;
+
+                        options.Events = new CookieAuthenticationEvents
+                        {
+                            OnRedirectToAccessDenied = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnRedirectToLogout = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnRedirectToReturnUrl = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnSignedIn = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnSigningIn = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnSigningOut = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnValidatePrincipal = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            },
+                            OnRedirectToLogin = ctx =>
+                            {
+                                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                return Task.CompletedTask;
+                            }
+                        };
                     });
             
 
-            /*
-            Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            });
-            */
-
-            Services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
-            Services.AddDbContext<AvatarDbContext>((serviceProvider, options) =>
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("AvatarDbConnection"));
-            });
+            Services
+                .AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                })
+                .AddDbContext<AvatarDbContext>((serviceProvider, options) =>
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("AvatarDbConnection"));
+                });
             /*
             Services.ConfigureApplicationCookie(options =>
             {
@@ -227,6 +272,7 @@ namespace BlazorTemplate.Server
                 };
             });
             */
+
             Services.AddIdentity<User, Role>(options =>
             {
             })

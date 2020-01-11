@@ -7,8 +7,27 @@
 @using Sotsera.Blazor.Toaster
 @using Microsoft.AspNetCore.Components.Authorization
 
-<AuthorizeView>
-    <Authorized>
+
+@switch (SessionState)
+{
+    default:
+    case SessionState.LoggedOut:
+    case SessionState.LogInError:
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item px-3">
+                <a class="nav-link" href="./login">ログイン</a>
+            </li>
+        </ul>
+        break;
+
+    case SessionState.LoggingIn:
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item px-3">
+                認証中...
+            </li>
+        </ul>
+        break;
+    case SessionState.LoggedIn:
         <ul class="nav navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <button class="nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -26,28 +45,14 @@
                 </div>
             </li>
         </ul>
-    </Authorized>
-    <Authorizing>
-        <ul class="nav navbar-nav ml-auto">
-            <li class="nav-item px-3">
-                認証中...
-            </li>
-        </ul>
-    </Authorizing>
-    <NotAuthorized>
-        <ul class="nav navbar-nav ml-auto">
-            <li class="nav-item px-3">
-                <a class="nav-link" href="./login">ログイン</a>
-            </li>
-        </ul>
-    </NotAuthorized>
-</AuthorizeView>
+        break;
+}
 
 @code
 {
-    //bool IsLogin { get; set; } = false;
-    string UserName { get; set; } = "";
-    string Avatar { get; set; }
+    SessionState SessionState { get; set; } = SessionState.LoggedOut;
+    string UserName { get; set; } = string.Empty;
+    string Avatar { get; set; } = string.Empty;
 
     [Inject]
     protected IToaster Toaster { get; set; }
@@ -58,15 +63,17 @@
         await AccountService.GetUserInfomationAsync();
         await AvatarService.GetMyAvatarAsync();
 
+        NavigationManager.NavigateTo("/logout");
         StateHasChanged();
     }
 
-    protected override void OnInitialized()
+    protected override Task OnInitializedAsync()
     {
         AccountService.UserNameChanged += OnUserNameChanged;
         AvatarService.AvatarChanged += OnAvatarChanged;
+        SessionService.StateChanged += OnSessionStateChanged;
 
-        base.OnInitialized();
+        return base.OnInitializedAsync();
     }
 
     protected void OnUserNameChanged(object sender, string username)
@@ -81,9 +88,16 @@
         StateHasChanged();
     }
 
+    protected void OnSessionStateChanged(SessionState state)
+    {
+        SessionState = state;
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
         AccountService.UserNameChanged -= OnUserNameChanged;
         AvatarService.AvatarChanged -= OnAvatarChanged;
+        SessionService.StateChanged -= OnSessionStateChanged;
     }
 }
