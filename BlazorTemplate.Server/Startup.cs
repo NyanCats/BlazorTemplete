@@ -26,6 +26,7 @@ using BlazorTemplate.Server.Infrastructures.Stores;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Net.Http.Headers;
 
 namespace BlazorTemplate.Server
 {
@@ -65,13 +66,14 @@ namespace BlazorTemplate.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseCookiePolicy();
+            app.UseCookiePolicy();
+
             //app.UseRequestLocalization();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endPoints =>
             {
-                endpoints.MapDefaultControllerRoute();
-                endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+                endPoints.MapControllers();
+                endPoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
             });
 
             //app.UseMiddleware<CsrfTokenCookieMiddleware>();
@@ -89,14 +91,15 @@ namespace BlazorTemplate.Server
                     MediaTypeNames.Application.Octet
                 });
             });
-
+            
             Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressConsumesConstraintForFormFileParameters = true;
                 options.SuppressInferBindingSourcesForParameters = true;
                 options.SuppressModelStateInvalidFilter = true;
+                options.SuppressMapClientErrors = false;
             });
-
+            
             Services.Configure<IdentityOptions>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = false;
@@ -116,17 +119,14 @@ namespace BlazorTemplate.Server
                 options.User.RequireUniqueEmail = false;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
             });
-            Services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.LoginPath = "/";
-                options.AccessDeniedPath = "/";
-                options.SlidingExpiration = true;
-            });
+
+            /*
             Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = false;
+                    options.ForwardSignIn = null;
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -137,16 +137,32 @@ namespace BlazorTemplate.Server
                         ValidAudience = Configuration["JwtAudience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
                     };
-                    
-                })
-                .AddCookie(options =>
-                {
-                    options.LoginPath = $"/";
-                    options.LogoutPath = $"/";
-                    options.AccessDeniedPath = $"/";
-                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 });
-                
+               */
+
+
+            
+            Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(options =>
+                    {
+                        options.ReturnUrlParameter = new PathString("/");
+                        options.AccessDeniedPath = new PathString("/");
+                        options.LoginPath = new PathString("/login");
+                        options.LogoutPath = new PathString("/logout");
+                        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                        options.SlidingExpiration = true;
+                    });
+            
+
+            /*
+            Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            });
+            */
+
             Services.AddDbContext<ApplicationIdentityDbContext>((serviceProvider, options) => 
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -155,65 +171,67 @@ namespace BlazorTemplate.Server
             {
                 options.UseSqlServer(Configuration.GetConnectionString("AvatarDbConnection"));
             });
-
-            Services.ConfigureApplicationCookie(config =>
+            /*
+            Services.ConfigureApplicationCookie(options =>
             {
+                options.ReturnUrlParameter = "/";
+                options.AccessDeniedPath = string.Empty;
+                options.LoginPath = "/login";
+                options.LogoutPath = "/logout";
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
                 
-                config.Events = new CookieAuthenticationEvents
+                options.Events = new CookieAuthenticationEvents
                 {
                     OnRedirectToAccessDenied = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnRedirectToLogout = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnRedirectToReturnUrl = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnSignedIn = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnSigningIn = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnSigningOut = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnValidatePrincipal = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     },
                     OnRedirectToLogin = ctx =>
                     {
                         ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     }
                    
                 };
-                /*
-                config.ReturnUrlParameter = string.Empty;
-                config.AccessDeniedPath = string.Empty;
-                config.LoginPath = string.Empty;
-                config.LogoutPath = string.Empty;
-                config.ExpireTimeSpan = TimeSpan.FromDays(30);
-                */
             });
-                Services.AddIdentity<User, Role>()
-                    .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-                    .AddErrorDescriber<IdentityErrorDescriberJapanese>();
+            */
+            Services.AddIdentity<User, Role>(options =>
+            {
+            })
+                .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+                .AddErrorDescriber<IdentityErrorDescriberJapanese>();
             //.AddDefaultTokenProviders();
 
             Services

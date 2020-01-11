@@ -17,7 +17,7 @@ namespace BlazorTemplate.Server.Controllers
 {
     //[Produces("application/json")]
     //[Consumes("application/json")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
     public class AccountController : ControllerBase

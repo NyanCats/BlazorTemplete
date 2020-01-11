@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace BlazorTemplate.Server.Controllers
 {
     [Produces("application/json")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
     public class SessionController : ControllerBase

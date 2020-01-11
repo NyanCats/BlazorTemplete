@@ -11,20 +11,20 @@ namespace BlazorTemplate.Client.Services
 {
     public delegate void UserNameEventHandler(AccountService sender, string username);
 
-    public class AccountService
+    public class AccountService : NetworkServiceBase
     {
         public event UserNameEventHandler UserNameChanged;
 
         HttpClient HttpClient { get; set; }
-        //AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         ILocalStorageService LocalStorage { get; set; }
+
+        public override string EndPointUri => "api/account";
 
         public AccountService(  HttpClient httpClient,
                                 AuthenticationStateProvider authenticationStateProvider,
                                 ILocalStorageService localStorage)
         {
             HttpClient = httpClient;
-            //AuthenticationStateProvider = authenticationStateProvider;
             LocalStorage = localStorage;
         }
 
@@ -36,27 +36,20 @@ namespace BlazorTemplate.Client.Services
 
         public async Task<CreateAccountResult> CreateAsync(CreateAccountRequest request)
         {
-            CreateAccountResult result;
-            try
-            {
-                result = await HttpClient.PostJsonAsync<CreateAccountResult>("account", request);
-            }
-            catch
-            {
-                return null;
-            }
+
+            var result = await HttpClient.PostJsonAsync<CreateAccountResult>(EndPointUri, request);
             return result;
         }
 
         public async Task<bool> DeleteAsync()
         {
-            var response = await HttpClient.DeleteAsync("account");
+            var response = await HttpClient.DeleteAsync(EndPointUri);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> ValidateAsync(ValidateAccountRequest request)
         {
-            var response = await HttpClient.PutJsonAsync<HttpResponseMessage>("account", request);
+            var response = await HttpClient.PutJsonAsync<HttpResponseMessage>(EndPointUri, request);
             return response.IsSuccessStatusCode;
         }
 
@@ -64,7 +57,7 @@ namespace BlazorTemplate.Client.Services
         {
             try
             {
-                var response = await HttpClient.GetJsonAsync<GetUserInfomationResult>("account");
+                var response = await HttpClient.GetJsonAsync<GetUserInfomationResult>(EndPointUri);
                 OnUserNameChanged(this, response.UserName);
                 return response;
             }

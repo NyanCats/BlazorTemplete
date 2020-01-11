@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlazorTemplate.Server.Controllers
 {
     //[Produces("application/json")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
     public class AvatarController : ControllerBase

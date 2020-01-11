@@ -17,9 +17,10 @@
 {
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         await SessionService.LogoutAsync();
         await AccountService.GetUserInfomationAsync();
         await AvatarService.GetMyAvatarAsync();
+
+        await base.OnInitializedAsync();
     }
 }

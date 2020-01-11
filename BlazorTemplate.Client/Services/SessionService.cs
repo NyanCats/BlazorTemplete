@@ -25,7 +25,7 @@ namespace BlazorTemplate.Client.Services
         protected virtual void OnLoggedIn(SessionService sender) => LoggedIn?.Invoke(this);
         protected virtual void OnLoggedOut(SessionService sender) => LoggedOut?.Invoke(this);
 
-        public override string EndPointUri => "session";
+        public override string EndPointUri => "api/session";
         HttpClient HttpClient { get; set; }
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         ILocalStorageService LocalStorage { get; set; }
@@ -79,7 +79,6 @@ namespace BlazorTemplate.Client.Services
             var response =  await HttpClient.GetAsync(EndPointUri);
             if (response.IsSuccessStatusCode) return true;
 
-            await LogoutAsync();
 
             return false;
         }

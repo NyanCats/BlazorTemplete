@@ -32,18 +32,18 @@
 {
     [Inject]
     protected IToaster Toaster { get; set; }
-
+    /*
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-
+    */
     protected override async Task OnInitializedAsync()
     {
         await AutoLoginAsync();
-        await base.OnInitializedAsync();
     }
 
     protected async Task AutoLoginAsync()
     {
+        
         // ローカル検証
         var result = await SessionService.VerifyAsync();
         if (!result) return;

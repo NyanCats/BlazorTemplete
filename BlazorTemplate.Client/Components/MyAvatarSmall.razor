@@ -28,17 +28,14 @@
 </div>
 
 
-@functions
+@code
 {
     string AvatarImage { get; set; }
 
     protected override Task OnInitializedAsync()
     {
         AvatarService.AvatarChanged += OnAvatarChanged;
-        if (!string.IsNullOrEmpty(AvatarService.MyAvatar))
-        {
-            AvatarImage = AvatarService.MyAvatar;
-        }
+        AvatarImage = AvatarService.MyAvatar;
         return base.OnInitializedAsync();
     }
 

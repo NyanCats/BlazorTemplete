@@ -18,7 +18,7 @@ namespace BlazorTemplate.Client.Services
         public event AvatarEventHandler AvatarChanged;
 
 
-        public override string EndPointUri => "avatar";
+        public override string EndPointUri => "api/avatar";
         HttpClient HttpClient { get; set; }
         public string MyAvatar { get; protected set; } = string.Empty;
 
@@ -53,6 +53,7 @@ namespace BlazorTemplate.Client.Services
                 return response.IsSuccessStatusCode;
             }
         }
+
         public async Task<bool> DeleteAsync()
         {
             await HttpClient.DeleteAsync("avatar");

@@ -3,55 +3,62 @@
 @inject AvatarService AvatarService
 @inject NavigationManager NavigationManager
 @implements IDisposable
+
 @using Sotsera.Blazor.Toaster
+@using Microsoft.AspNetCore.Components.Authorization
 
-@if (IsLogin)
-{
-    <ul class="nav navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-            <button class="nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                <MyAvatarSmall />
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-                <div class="dropdown-header">
-                    <h5>@UserName</h5>
+<AuthorizeView>
+    <Authorized>
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <button class="nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <MyAvatarSmall />
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="dropdown-header">
+                        <h5>@UserName</h5>
+                    </div>
+
+                    <a class="dropdown-item" @onclick="Click_logout">
+                        <i class="icon-logout"></i> ログアウト
+                    </a>
+
                 </div>
+            </li>
+        </ul>
+    </Authorized>
+    <Authorizing>
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item px-3">
+                認証中...
+            </li>
+        </ul>
+    </Authorizing>
+    <NotAuthorized>
+        <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item px-3">
+                <a class="nav-link" href="./login">ログイン</a>
+            </li>
+        </ul>
+    </NotAuthorized>
+</AuthorizeView>
 
-                <a class="dropdown-item" onclick=@LogoutAccount()>
-                    <i class="icon-logout"></i> ログアウト
-                </a>
-
-            </div>
-        </li>
-    </ul>
-}
-else
+@code
 {
-    <ul class="nav navbar-nav ml-auto">
-        <li class="nav-item px-3">
-            <a class="nav-link" href="./login">ログイン</a>
-        </li>
-    </ul>
-}
-
-
-@functions
-{
-    bool IsLogin { get; set; } = false;
+    //bool IsLogin { get; set; } = false;
     string UserName { get; set; } = "";
     string Avatar { get; set; }
 
     [Inject]
     protected IToaster Toaster { get; set; }
 
-    async Task LogoutAccount()
+    protected async Task Click_logout()
     {
         await SessionService.LogoutAsync();
         await AccountService.GetUserInfomationAsync();
         await AvatarService.GetMyAvatarAsync();
-        Toaster.Success("ログアウトしました。");
 
-        NavigationManager.NavigateTo("/");
+        StateHasChanged();
     }
 
     protected override void OnInitialized()
@@ -61,7 +68,6 @@ else
 
         base.OnInitialized();
     }
-
 
     protected void OnUserNameChanged(object sender, string username)
     {
