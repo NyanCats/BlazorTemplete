@@ -37,7 +37,7 @@ else
     </table>
 }
 
-@functions 
+@code 
 {
     WeatherForecast[] forecasts;
 

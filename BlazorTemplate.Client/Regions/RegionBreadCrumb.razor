@@ -28,29 +28,32 @@
         </li>
     </ol>
 </nav>
-@functions
+@code
 {
     List<string> Locations = new List<string>();
 
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += OnLocationChanges<LocationChangedEventArgs>;
-        //OnLocationChanges(null, UriHelper.GetAbsoluteUri());
+        CreateLocations();
     }
 
     private void OnLocationChanges<LocationChangedEventArgs>(object sender, LocationChangedEventArgs e)
     {
-        /*
+
+        CreateLocations();
+        StateHasChanged();
+    }
+
+    private void CreateLocations()
+    {
         Locations.Clear();
         Locations.Add("Home");
-        foreach (var item in new Uri(e.Location).AbsolutePath.Split('/'))
+        foreach (var item in NavigationManager.Uri.Replace(NavigationManager.BaseUri,"").Split('/'))
         {
             if (string.IsNullOrWhiteSpace(item)) { continue; }
             Locations.Add(item);
         }
-        */
-        StateHasChanged();
-
     }
 
     public void Dispose()

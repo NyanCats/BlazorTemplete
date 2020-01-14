@@ -15,7 +15,11 @@
     case SessionState.LogInError:
         <ul class="nav navbar-nav ml-auto">
             <li class="nav-item px-3">
-                <a class="nav-link" href="./login">ログイン</a>
+                <a class="nav-link" href="./login">
+                    <button type="button" class="btn btn-outline-primary">
+                        ログイン
+                    </button>
+                </a>
             </li>
         </ul>
         break;
@@ -23,7 +27,26 @@
     case SessionState.LoggingIn:
         <ul class="nav navbar-nav ml-auto">
             <li class="nav-item px-3">
-                認証中...
+                <div class="loader">
+                    <style>
+                        div.loader-inner.line-scale > div {
+                            background-color: gray;
+                        }
+
+                        div.loader-inner.line-scale {
+                            transform: scale(0.6, 0.6);
+                        }
+                    </style>
+                    <div class="loader-inner line-scale">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div><span class="tooltip">
+                        <p>line-scale</p>
+                    </span>
+                </div>
             </li>
         </ul>
         break;
@@ -63,7 +86,8 @@
         await AccountService.GetUserInfomationAsync();
         await AvatarService.GetMyAvatarAsync();
 
-        NavigationManager.NavigateTo("/logout");
+        NavigationManager.NavigateTo("/");
+        Toaster.Success("ログアウトしました。");
         StateHasChanged();
     }
 

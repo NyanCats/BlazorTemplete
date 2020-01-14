@@ -1,17 +1,13 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
 using BlazorTemplate.Shared.WebApis.Sessions;
-using System;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using System.Text.Json;
 using System.Text;
 using System.Net.Http.Headers;
+using System.Threading;
 
 namespace BlazorTemplate.Client.Services
 {
@@ -56,12 +52,12 @@ namespace BlazorTemplate.Client.Services
             LocalStorage = localStorage;
         }
 
-        public async Task<bool> LoginAsync(LoginRequest request)
+        public async Task<bool> LoginAsync(LoginRequest request, CancellationToken ctoken = default)
         {
             NotifySessionStateChanged(SessionState.LoggingIn);
 
             var loginAsJson = JsonSerializer.Serialize(request);
-            var response = await HttpClient.PostAsync(EndPointUri, new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync(EndPointUri, new StringContent(loginAsJson, Encoding.UTF8, "application/json"), ctoken);
 
             if (!response.IsSuccessStatusCode)
             {
