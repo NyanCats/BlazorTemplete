@@ -63,8 +63,6 @@ namespace BlazorTemplate.Server.Services
         public async Task<bool> ValidateTokenAsync(string token)
         {
             //var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
-            
-
 
             return true;
         }

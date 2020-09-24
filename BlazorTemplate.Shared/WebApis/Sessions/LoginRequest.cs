@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace BlazorTemplate.Shared.WebApis.Sessions
 {
-    public class LoginRequest
+    public class LoginRequest : IApiRequest
     {
         [Display(Name = "ユーザー名")]
         [Required]

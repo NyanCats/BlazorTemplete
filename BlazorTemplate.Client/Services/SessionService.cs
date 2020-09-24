@@ -8,6 +8,9 @@ using System.Text.Json;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Threading;
+using Microsoft.AspNetCore.Components;
+using System.Net.Http.Json;
+using System.Net;
 
 namespace BlazorTemplate.Client.Services
 {
@@ -16,13 +19,13 @@ namespace BlazorTemplate.Client.Services
 
     public enum SessionState : int
     {
-        LoggedOut = 0,
-        LoggingIn = 1,
-        LoggedIn = 2,
-        LogInError = 3
+        LoggedOut,
+        LoggingIn,
+        LoggedIn,
+        LogInError
     }
 
-    public class SessionService : NetworkServiceBase
+    public class SessionService : NetworkServiceBase, INetworkService
     {
         public event SessionStateEventHandler StateChanged;
         public event SessionEventHandler LoggedIn;
@@ -38,16 +41,13 @@ namespace BlazorTemplate.Client.Services
 
         public override string EndPointUri => "api/session";
 
-
-        HttpClient HttpClient { get; set; }
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         ILocalStorageService LocalStorage { get; set; }
 
         public SessionService(  HttpClient httpClient,
                                 AuthenticationStateProvider authenticationStateProvider,
-                                ILocalStorageService localStorage)
+                                ILocalStorageService localStorage) : base(httpClient)
         {
-            HttpClient = httpClient;
             AuthenticationStateProvider = authenticationStateProvider;
             LocalStorage = localStorage;
         }
@@ -56,18 +56,16 @@ namespace BlazorTemplate.Client.Services
         {
             NotifySessionStateChanged(SessionState.LoggingIn);
 
-            var loginAsJson = JsonSerializer.Serialize(request);
-            var response = await HttpClient.PostAsync(EndPointUri, new StringContent(loginAsJson, Encoding.UTF8, "application/json"), ctoken);
+            var (code, response) = await PostAsync<LoginRequest, LoginResponse>(request);
 
-            if (!response.IsSuccessStatusCode)
+            if (code != HttpStatusCode.OK)
             {
                 NotifySessionStateChanged(SessionState.LogInError);
                 return false;
             }
-            var loginResult = JsonSerializer.Deserialize<LoginResult>(await response.Content.ReadAsStringAsync());
-
-            await LocalStorage.SetItemAsync("authToken", loginResult.Token);
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
+            
+            await LocalStorage.SetItemAsync("authToken", response.Token);
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", response.Token);
 
             (AuthenticationStateProvider as ApiAuthenticationStateProvider).MarkUserAsAuthenticated(request.UserName);
 

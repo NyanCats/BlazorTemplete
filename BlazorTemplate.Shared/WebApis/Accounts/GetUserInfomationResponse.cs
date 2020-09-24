@@ -4,13 +4,13 @@ using System.Text;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    public class GetUserInfomationResult
+    public class GetUserInfomationResponse : IApiResponse
     {
         public string UserName { get; set; }
 
-        public GetUserInfomationResult() { }
+        public GetUserInfomationResponse() { }
 
-        public GetUserInfomationResult(string userName)
+        public GetUserInfomationResponse(string userName)
         {
             UserName = userName;
         }

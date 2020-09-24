@@ -11,9 +11,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BlazorTemplate.Server.Controllers
 {
-    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     //[AutoValidateAntiforgeryToken]    
     public class SessionController : ControllerBase
     {
@@ -33,18 +34,18 @@ namespace BlazorTemplate.Server.Controllers
         [HttpPost]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login( [FromBody] LoginRequest request)
+        public async Task<IActionResult> Login( LoginRequest request)
         {
+            
             var(result, token) = await SessionService.LoginAsync(request.UserName, request.Password);
 
             if (!result.Succeeded) return BadRequest();
 
-            return Ok(new LoginResult() { Token = token });
+            return Ok(new LoginResponse() { Token = token });
         }
 
         [HttpDelete]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await SessionService.LogoutAsync();

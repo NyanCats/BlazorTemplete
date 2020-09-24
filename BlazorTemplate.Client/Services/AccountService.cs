@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components;
 using BlazorTemplate.Shared.WebApis.Accounts;
-using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Net;
 
 namespace BlazorTemplate.Client.Services
 {
     public delegate void UserNameEventHandler(AccountService sender, string username);
 
-    public class AccountService : NetworkServiceBase
+    public class AccountService : NetworkServiceBase, INetworkService
     {
         public event UserNameEventHandler UserNameChanged;
 
-        HttpClient HttpClient { get; set; }
         ILocalStorageService LocalStorage { get; set; }
 
         public override string EndPointUri => "api/account";
 
         public AccountService(  HttpClient httpClient,
                                 AuthenticationStateProvider authenticationStateProvider,
-                                ILocalStorageService localStorage)
+                                ILocalStorageService localStorage) : base(httpClient)
         {
-            HttpClient = httpClient;
             LocalStorage = localStorage;
         }
 
@@ -34,30 +32,36 @@ namespace BlazorTemplate.Client.Services
 
 
 
-        public async Task<CreateAccountResult> CreateAsync(CreateAccountRequest request)
+        public async Task<CreateAccountResponse> CreateAsync(CreateAccountRequest request)
         {
+            var(code, response) = await PostAsync<CreateAccountRequest, CreateAccountResponse>(request);
 
-            var result = await HttpClient.PostJsonAsync<CreateAccountResult>(EndPointUri, request);
-            return result;
+            return response;
+
+            //var result = await HttpClient.PostAsJsonAsync<CreateAccountResponse>(EndPointUri, request);
+            //return result;
         }
 
-        public async Task<bool> DeleteAsync()
+        public new async Task DeleteAsync()
         {
-            var response = await HttpClient.DeleteAsync(EndPointUri);
-            return response.IsSuccessStatusCode;
+            await base.DeleteAsync();
+            //var response = await HttpClient.DeleteAsync(EndPointUri);
+            //return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> ValidateAsync(ValidateAccountRequest request)
         {
-            var response = await HttpClient.PutJsonAsync<HttpResponseMessage>(EndPointUri, request);
-            return response.IsSuccessStatusCode;
+            var (code, response) = await PutAsync<ValidateAccountRequest, ValidateAccountResponse>(request);
+            
+            if (code == HttpStatusCode.OK) return true;
+            return false;
         }
 
-        public async Task<GetUserInfomationResult> GetUserInfomationAsync()
+        public async Task<GetUserInfomationResponse> GetUserInfomationAsync()
         {
             try
             {
-                var response = await HttpClient.GetJsonAsync<GetUserInfomationResult>(EndPointUri);
+                var response = await HttpClient.GetFromJsonAsync<GetUserInfomationResponse>(EndPointUri);
                 OnUserNameChanged(this, response.UserName);
                 return response;
             }

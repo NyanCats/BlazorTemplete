@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace BlazorTemplate.Shared.WebApis.Sessions
 {
-    public class LoginResult
+    public class LoginResponse : IApiResponse
     {
         public string Token { get; set; }
     }

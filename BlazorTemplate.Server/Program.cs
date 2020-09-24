@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System.IO;
 
 namespace BlazorTemplate.Server
@@ -9,22 +10,14 @@ namespace BlazorTemplate.Server
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost
-                .CreateDefaultBuilder(args)
-                .UseKestrel()
-                .UseConfiguration
-                (
-                    new ConfigurationBuilder()
-                        .AddCommandLine(args)
-                        .Build()
-                )
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://*:80/")
-                .UseStartup<Startup>()
-                .Build();
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

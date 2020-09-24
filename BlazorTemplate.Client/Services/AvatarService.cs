@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 using System.Threading;
 using System.Net.Http.Headers;
 using System.IO;
-using Blazor.FileReader;
+using Tewr.Blazor.FileReader;
 using System;
 using BlazorTemplate.Shared.WebApis.Avatars;
 using Microsoft.AspNetCore.Components;
@@ -13,19 +13,16 @@ namespace BlazorTemplate.Client.Services
 {
     public delegate void AvatarEventHandler(object sender, string avatar);
 
-    public class AvatarService : NetworkServiceBase
+    public class AvatarService : NetworkServiceBase, INetworkService
     {
         public event AvatarEventHandler AvatarChanged;
 
 
         public override string EndPointUri => "api/avatar";
-        HttpClient HttpClient { get; set; }
+
         public string MyAvatar { get; protected set; } = string.Empty;
 
-        public AvatarService(HttpClient httpClient)
-        {
-            HttpClient = httpClient;
-        }
+        public AvatarService(HttpClient httpClient) : base(httpClient) { }
 
         protected virtual void OnAvatarChanged(object sender, string avatar)
         {

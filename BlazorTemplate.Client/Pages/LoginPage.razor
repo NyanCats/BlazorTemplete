@@ -1,16 +1,17 @@
 ﻿@page "/login"
 @layout MainLayout
 
-@using Microsoft.AspNetCore.Blazor.Services
 @using BlazorTemplate.Shared.WebApis.Sessions
 @using Sotsera.Blazor.Toaster
-@using Microsoft.AspNetCore.Components.Authorization
+@using BlazorTemplate.Client.Services
+@using BlazorTemplate.Client.Layouts
 
 @inject NavigationManager NavigationManager
 @inject AccountService AccountService
 @inject SessionService SessionService
 @inject AvatarService AvatarService
 
+@using Microsoft.AspNetCore.Components.Forms
 
 
 <div class="container col-md-8" id="login-page">
@@ -76,7 +77,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if(await SessionService.VerifyAsync()) NavigationManager.NavigateTo("/");
+        if (await SessionService.VerifyAsync()) NavigationManager.NavigateTo("/");
     }
 
     async Task LoginAccount()

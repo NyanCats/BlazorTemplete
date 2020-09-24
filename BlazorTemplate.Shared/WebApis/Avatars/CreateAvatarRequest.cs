@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BlazorTemplate.Shared.WebApis.Avatars
 {
-    public class CreateAvatarRequest
+    public class CreateAvatarRequest : IApiRequest
     {
     }
 }

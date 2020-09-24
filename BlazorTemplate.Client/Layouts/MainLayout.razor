@@ -2,10 +2,6 @@
 
 @using Sotsera.Blazor.Toaster
 
-@inject SessionService SessionService
-@inject AccountService AccountService
-@inject AvatarService AvatarService
-
 <RegionHeader />
 
 <div class="app-body">
@@ -30,6 +26,13 @@
 {
     [Inject]
     protected IToaster Toaster { get; set; }
+    [Inject]
+    protected SessionService SessionService { get; set; }
+    [Inject]
+    protected AccountService AccountService { get; set; }
+    [Inject]
+    protected AvatarService AvatarService { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,7 +41,6 @@
 
     protected async Task AutoLoginAsync()
     {
-        
         // ローカル検証
         var result = await SessionService.VerifyAsync();
         if (!result) return;

@@ -42,44 +42,46 @@ namespace BlazorTemplate.Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseResponseCompression();
+            //app.UseResponseCompression();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBlazorDebugging();
-                ListAllRegisteredServices(app);
+                app.UseWebAssemblyDebugging();
+                //ListAllRegisteredServices(app);
             }
             else
             {
                 app.UseExceptionHandler("/Error");
-                //app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
-
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
-            app.UseClientSideBlazorFiles<Client.Startup>();
-
-            app.UseRouting();
-
+            
+            // ‚±‚Ì‡”Ô‚Í•Ï‚¦‚È‚¢‚±‚ÆB
             app.UseAuthentication();
+            app.UseRouting();
             app.UseAuthorization();
-            app.UseCookiePolicy();
+            // ----------------------
 
+            //app.UseCookiePolicy();
+
+            
+
+            /*
             app.UseCors(options => options
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());
+                .AllowAnyHeader());*/
             //app.UseRequestLocalization();
 
             app.UseEndpoints(endPoints =>
             {
-                endPoints.MapControllers();
                 endPoints.MapRazorPages();
-                endPoints.MapFallbackToClientSideBlazor<Client.Startup>("/","index.html");
-                //endPoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+                endPoints.MapControllers();
+                endPoints.MapFallbackToFile("index.html");
             });
 
             //app.UseMiddleware<CsrfTokenCookieMiddleware>();
@@ -89,7 +91,7 @@ namespace BlazorTemplate.Server
         public void ConfigureServices(IServiceCollection services)
         {
             Services = services;
-            
+            /*
             Services.AddResponseCompression(options =>
             {
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
@@ -97,6 +99,8 @@ namespace BlazorTemplate.Server
                     MediaTypeNames.Application.Octet
                 });
             });
+            */
+            
             
             Services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -105,7 +109,7 @@ namespace BlazorTemplate.Server
                 options.SuppressModelStateInvalidFilter = true;
                 options.SuppressMapClientErrors = true;
             });
-            
+            /*
             Services.Configure<IdentityOptions>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = false;
@@ -126,16 +130,16 @@ namespace BlazorTemplate.Server
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
             });
 
-            Services.AddCors();
-            Services.AddControllers();
+            */
+            //Services.AddCors();
+            
+            Services.AddControllersWithViews();
+            Services.AddRazorPages();
 
-            /*
+            
             Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.RequireHttpsMetadata = false;
-                    options.ForwardSignIn = null;
-
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -147,7 +151,7 @@ namespace BlazorTemplate.Server
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
                     };
                 });
-               */
+
 
 
 
@@ -216,6 +220,8 @@ namespace BlazorTemplate.Server
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("AvatarDbConnection"));
                 });
+            
+            
             /*
             Services.ConfigureApplicationCookie(options =>
             {
@@ -272,14 +278,15 @@ namespace BlazorTemplate.Server
                 };
             });
             */
-
+            
             Services.AddIdentity<User, Role>(options =>
             {
             })
                 .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
                 .AddErrorDescriber<IdentityErrorDescriberJapanese>();
             //.AddDefaultTokenProviders();
-
+            
+            /*
             Services
                 .AddMvc(options =>
                 {
@@ -292,9 +299,8 @@ namespace BlazorTemplate.Server
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 });
-
-            //Services.AddRazorPages();
-
+            */
+            
             Services.AddScoped<AccountService>();
             Services.AddScoped<SessionService>();
             Services.AddScoped<AvatarService>();
@@ -303,7 +309,7 @@ namespace BlazorTemplate.Server
 
             Services.AddScoped<AvatarStore>();
             Services.AddScoped<UserAvatarStore>();
-
+            
             //Services.AddTransient< IUserStore<ApplicationUser>, TestApplicationUserStore >();
             //Services.AddTransient< IRoleStore<ApplicationRole>, TestApplicationRoleStore >();
         }

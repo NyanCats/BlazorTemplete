@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    public class ValidateAccountRequest
+    public class ValidateAccountRequest : IApiRequest
     {
         // TODO: write validations
         [Required]

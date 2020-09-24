@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace BlazorTemplate.Shared.WebApis.Accounts
 {
-    public class CreateAccountRequest
+    public class CreateAccountRequest : IApiRequest
     {
         [Display(Name = "同意")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "利用規約への同意が必要です。")]

@@ -15,8 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorTemplate.Server.Controllers
 {
-    //[Produces("application/json")]
-    //[Consumes("application/json")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
@@ -68,7 +68,7 @@ namespace BlazorTemplate.Server.Controllers
 
             //SpamBlockService.AddOrUpdate(userIp);
 
-            return Ok( new CreateAccountResult(password) );
+            return Ok( new CreateAccountResponse(password) );
         }
 
         [HttpGet]
@@ -79,7 +79,7 @@ namespace BlazorTemplate.Server.Controllers
             var user = await AccountService.FindByNameAsync(HttpContext.User.Identity.Name);
             if (user == null) return BadRequest();
 
-            return Ok(new GetUserInfomationResult(user.UserName));
+            return Ok(new GetUserInfomationResponse(user.UserName));
         }
 
         // TODO

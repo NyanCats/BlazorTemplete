@@ -1,6 +1,7 @@
 ﻿@using System.Text
-@using Microsoft.AspNetCore.Blazor.Services
 @using BlazorTemplate.Shared.WebApis.Accounts
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Forms;
 @*using Microsoft.AspNetCore.Antiforgery.IAntiforgery*@
 @using Sotsera.Blazor.Toaster
 
@@ -115,7 +116,7 @@
                                 <i class="icon-key"></i>
                             </span>
                         </div>
-                        <input class="form-control" id="#copyTarget_Password" type="text" value="@CreateAccountResult.Password" readonly="">
+                        <input class="form-control" id="#copyTarget_Password" type="text" value="@CreateAccountResponse.Password" readonly="">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-success" data-toggle="tooltip" data-placement="top" title="コピーする" @onclick="Click_CopyPassword">
                                 <i class="icon-note"></i>
@@ -135,14 +136,14 @@
 @code
 {
     CreateAccountRequest CreateAccountRequest { get; set; } = new CreateAccountRequest();
-    CreateAccountResult CreateAccountResult { get; set; } = new CreateAccountResult();
+    CreateAccountResponse CreateAccountResponse { get; set; } = new CreateAccountResponse();
 
     [Inject]
     protected IToaster Toaster { get; set; }
 
     async Task RegisterAccount()
     {
-        CreateAccountResult result;
+        CreateAccountResponse result;
 
         result = await AccountService.CreateAsync(CreateAccountRequest);
 
@@ -153,15 +154,15 @@
             return;
         }
 
-        CreateAccountResult = result;
+        CreateAccountResponse = result;
         await JSRuntime.InvokeAsync<bool>("showRegisterModal");
 
         StateHasChanged();
     }
-     
+
     protected override async Task OnInitializedAsync()
     {
-        if(await SessionService.VerifyAsync()) NavigationManager.NavigateTo("/");
+        if (await SessionService.VerifyAsync()) NavigationManager.NavigateTo("/");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

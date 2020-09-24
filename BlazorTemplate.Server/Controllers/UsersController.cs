@@ -12,8 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorTemplate.Server.Controllers
 {
+    [Consumes("application/json")]
     [Produces("application/json")]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     //[AutoValidateAntiforgeryToken]    
     public class UsersController : ControllerBase
@@ -27,12 +28,12 @@ namespace BlazorTemplate.Server.Controllers
             SpamBlockService = spamBlockSharedService;
         }
 
-        [HttpGet("{id}")]
-        [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Get(string id)
+        [HttpGet]
+        public IEnumerable<int> Get()
         {
-            return NotFound();
+            var rng = new Random();
+            return Enumerable.Range(1, 5)
+            .ToArray();
         }
     }
 }
